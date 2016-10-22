@@ -1,0 +1,16 @@
+{
+	"ImportPath": "github.com/ejamesc/grepbook",
+	"GoVersion": "go1.6",
+	"GodepVersion": "v62",
+	"Deps": [
+		{
+			"ImportPath": "github.com/boltdb/bolt",
+			"Comment": "v1.2.0-13-g144418e",
+			"Rev": "144418e1475d8bf7abbdc48583500f1a20c62ea7"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "d4feaf1a7e61e1d9e79e6c4e76c6349e9cab0a03"
+		}
+	]
+}
