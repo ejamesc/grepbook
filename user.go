@@ -9,6 +9,7 @@ import (
 )
 
 type User struct {
+	ID       uint64 `json:"id"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
@@ -37,6 +38,7 @@ func (db *DB) DoesAnyUserExist() bool {
 // It expects a valid email and password.
 // It also returns an error if a duplicate user is found.
 func (db *DB) CreateUser(email, password string) (*User, error) {
+	user := &User{}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	if err != nil {
 		return nil, err
@@ -52,7 +54,13 @@ func (db *DB) CreateUser(email, password string) (*User, error) {
 			return ErrDuplicateRow
 		}
 
-		userJSON, err := json.Marshal(&User{Email: email, Password: string(hashedPassword)})
+		id, err := b.NextSequence()
+		if err != nil {
+			return err
+		}
+
+		user = &User{ID: id, Email: email, Password: string(hashedPassword)}
+		userJSON, err := json.Marshal(user)
 		if err != nil {
 			return fmt.Errorf("error with marshalling new user object: %s", err)
 		}
@@ -61,7 +69,8 @@ func (db *DB) CreateUser(email, password string) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &User{Email: email}, nil
+	user.Password = ""
+	return user, nil
 }
 
 // GetUser returns a user. If no user exists, a grepbook.ErrNoRows error is returned.
