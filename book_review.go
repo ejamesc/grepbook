@@ -74,7 +74,14 @@ func (db *DB) GetBookReview(uid string) (*BookReview, error) {
 }
 
 func (db *DB) DeleteBookReview(uid string) error {
-	return nil
+	err := db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket(reviews_bucket)
+		if b == nil {
+			return fmt.Errorf("no %s bucket exists", string(reviews_bucket))
+		}
+		return b.Delete([]byte(uid))
+	})
+	return err
 }
 
 type BookReviewDB interface {
