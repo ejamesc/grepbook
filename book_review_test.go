@@ -39,5 +39,13 @@ func TestDeleteBookReview(t *testing.T) {
 }
 
 func TestBookReviewSave(t *testing.T) {
+	delta := "<p>Stupid siaaaa</p>"
 
+	bookReview1.HTML = delta
+	err := bookReview1.Save(testDB)
+	ok(t, err)
+
+	br, err := testDB.GetBookReview(bookReview1.UID)
+	ok(t, err)
+	equals(t, delta, br.HTML)
 }
