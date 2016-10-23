@@ -18,7 +18,9 @@ func TestCreateBookReview(t *testing.T) {
 }
 
 func TestGetBookReview(t *testing.T) {
-
+	br, err := testDB.GetBookReview(bookReview1.UID)
+	ok(t, err)
+	equals(t, bookReview1, br)
 }
 
 func TestDeleteBookReview(t *testing.T) {

@@ -17,6 +17,7 @@ import (
 
 var testDB *grepbook.DB
 var user1 *grepbook.User
+var bookReview1 *grepbook.BookReview
 
 // TestMain sets up the entire suite
 func TestMain(m *testing.M) {
@@ -43,6 +44,8 @@ func TestMain(m *testing.M) {
 	}
 
 	user1, _ = testDB.CreateUser("test@test.com", "test")
+	chapters := grepbook.CreateChapter("Introduction, Prelude, Conclusion")
+	bookReview1, _ = testDB.CreateBookReview("The Inner Game of Tennis", "W. Timothy Gallwey", "<p>Great book!</p>", "{}", chapters)
 
 	retCode := m.Run()
 
