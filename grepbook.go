@@ -1,59 +1,38 @@
 package grepbook
 
-import "github.com/boltdb/bolt"
+import (
+	"errors"
 
+	"github.com/boltdb/bolt"
+)
+
+// This list of variables are a indication of what the list of buckets are in our db.
+var users_bucket = []byte("users")
+var reviews_bucket = []byte("book_reviews")
+var buckets_list = [][]byte{users_bucket, reviews_bucket}
+
+// Errors
+var ErrNoRows = errors.New("db: no rows in result set")
+var ErrDuplicateRow = errors.New("db: duplicate row found for unique constraint")
+
+// Wrapper for bolt db. This allows us to attach methods
+// to the db object.
 type DB struct {
 	*bolt.DB
 }
 
-type User struct {
-	Email    string `json:"email"`
-	Password string `json:"-"`
-}
-
-func (db *DB) DoesAnyUserExist() bool {
-	return false
-}
-
-func (db *DB) CreateUser(username, password string) (*User, error) {
-	return &User{}, nil
-}
-
-func (db *DB) CheckUserPasswordCorrect(username, password string) bool {
-	return false
-}
-
-type UserDB interface {
-	DoesAnyUserExist() bool
-	CreateUser(string, string) (*User, error)
-	CheckUserPasswordCorrect(string, string) bool
-}
-
-type BookReview struct {
-	UID   string `json:"uid"`
-	Title string `json:"title"`
-	HTML  []byte `json:"html"`
-	Delta string `json:"delta"`
-}
-
-func (db *DB) CreateBookReview(uid, title, delta string, HTML []byte) (*BookReview, error) {
-	return &BookReview{}, nil
-}
-
-func (db *DB) GetBookReview(uid string) (*BookReview, error) {
-	return &BookReview{}, nil
-}
-
-func (db *DB) DeleteBookReview(uid string) error {
-	return nil
-}
-
-type BookReviewDB interface {
-	CreateBookReview(string, string, string, []byte) (*BookReview, error)
-	GetBookReview(string) (*BookReview, error)
-	DeleteBookReview(string) error
-}
-
-func (br *BookReview) Save(db *DB) error {
+func (db *DB) CreateAllBuckets() error {
+	err := db.Update(func(tx *bolt.Tx) error {
+		for _, b := range buckets_list {
+			_, err := tx.CreateBucketIfNotExists(b)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
 	return nil
 }

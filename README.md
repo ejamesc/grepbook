@@ -2,7 +2,7 @@
 
 Some random project, oestensibly to record book reviews, but also to 
 
-a) learn Go web app testing
-b) proper vendoring
-c) the Quill editor (along with its fascinating OTTypes), and finally
-d) to showcase some Go webapp tricks I've picked up while building Commoncog.
+1. learn Go web app testing
+2. proper vendoring
+3. the Quill editor (along with its fascinating OTTypes), and finally
+4. to showcase some Go webapp tricks I've picked up while building Commoncog.
