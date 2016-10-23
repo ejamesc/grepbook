@@ -26,6 +26,9 @@ type Chapter struct {
 // and returns a list of Chapters with headings
 func CreateChapter(input string) []*Chapter {
 	headings := strings.Split(input, ",")
+	if len(headings) < 1 {
+		return []*Chapter{}
+	}
 	res := make([]*Chapter, len(headings))
 	for i, h := range headings {
 		res[i] = &Chapter{h}
@@ -51,7 +54,23 @@ func (db *DB) CreateBookReview(title, author, html, delta string, chapters []*Ch
 }
 
 func (db *DB) GetBookReview(uid string) (*BookReview, error) {
-	return &BookReview{}, nil
+	var bookReview *BookReview
+	err := db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket(reviews_bucket)
+		if b == nil {
+			return fmt.Errorf("no %s bucket exists", string(reviews_bucket))
+		}
+
+		brJSON := b.Get([]byte(uid))
+		if brJSON == nil {
+			return ErrNoRows
+		}
+		return json.Unmarshal(brJSON, &bookReview)
+	})
+	if err != nil {
+		return nil, err
+	}
+	return bookReview, nil
 }
 
 func (db *DB) DeleteBookReview(uid string) error {
