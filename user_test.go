@@ -9,6 +9,7 @@ import (
 func TestCreateUser(t *testing.T) {
 	user, err := testDB.CreateUser("blah@blah.com", "somepassword")
 	ok(t, err)
+	assert(t, user.ID != uint64(0), "expected user ID to be filled with sequence")
 	assert(t, user.Email != "", "expected user email to be filled but got empty string")
 	assert(t, user.Password == "", "expected user password to be empty but got some string instead")
 	defer testDB.DeleteUser(user.Email)
