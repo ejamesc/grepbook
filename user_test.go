@@ -9,9 +9,9 @@ import (
 func TestCreateUser(t *testing.T) {
 	user, err := testDB.CreateUser("blah@blah.com", "somepassword")
 	ok(t, err)
-	assert(t, user.ID != uint64(0), "expected user ID to be filled with sequence")
-	assert(t, user.Email != "", "expected user email to be filled but got empty string")
-	assert(t, user.Password == "", "expected user password to be empty but got some string instead")
+	assert(t, user.ID != uint64(0), "expect user ID to be filled with sequence")
+	assert(t, user.Email != "", "expect user email to be filled but got empty string")
+	assert(t, user.Password == "", "expect user password to be empty but got some string instead")
 	defer testDB.DeleteUser(user.Email)
 
 	res := testDB.DoesAnyUserExist()
@@ -19,6 +19,16 @@ func TestCreateUser(t *testing.T) {
 
 	user, err = testDB.CreateUser("blah@blah.com", "somepassword")
 	assert(t, err == grepbook.ErrDuplicateRow, "expected duplicate email to cause ErrDuplicateRow but no error received")
+	assert(t, user == nil, "expected user to be nil on error")
+}
+
+func TestCreateUserValidation(t *testing.T) {
+	user, err := testDB.CreateUser("blah", "somepassword")
+	assert(t, err != nil, "expected invalid email to return error")
+	assert(t, user == nil, "expected user to be nil on error")
+
+	user, err = testDB.CreateUser("blah@blah.com", "")
+	assert(t, err != nil, "expected invalid email to return error")
 	assert(t, user == nil, "expected user to be nil on error")
 }
 

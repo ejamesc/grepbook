@@ -3,7 +3,9 @@ package grepbook
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/boltdb/bolt"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -34,11 +36,19 @@ func (db *DB) DoesAnyUserExist() bool {
 	return res
 }
 
-// CreateUser creates a user. No email and password validation is done here.
+// CreateUser creates a user.
 // It expects a valid email and password.
 // It also returns an error if a duplicate user is found.
 func (db *DB) CreateUser(email, password string) (*User, error) {
 	user := &User{}
+	password = strings.TrimSpace(password)
+	if password == "" {
+		return nil, fmt.Errorf("password cannot be empty")
+	}
+	if !govalidator.IsEmail(email) {
+		return nil, fmt.Errorf("email is not a valid email address")
+	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	if err != nil {
 		return nil, err

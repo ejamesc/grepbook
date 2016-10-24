@@ -9,7 +9,8 @@ import (
 // This list of variables are a indication of what the list of buckets are in our db.
 var users_bucket = []byte("users")
 var reviews_bucket = []byte("book_reviews")
-var buckets_list = [][]byte{users_bucket, reviews_bucket}
+var sessions_bucket = []byte("sessions")
+var buckets_list = [][]byte{users_bucket, reviews_bucket, sessions_bucket}
 
 // Errors
 var ErrNoRows = errors.New("db: no rows in result set")
