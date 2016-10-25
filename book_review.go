@@ -4,18 +4,21 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/boltdb/bolt"
 	"github.com/renstrom/shortuuid"
 )
 
 type BookReview struct {
-	UID        string     `json:"uid"`
-	Title      string     `json:"title"`
-	BookAuthor string     `json:"book_author"`
-	HTML       string     `json:"html"`
-	Delta      string     `json:"delta"`
-	Chapters   []*Chapter `json:"chapters"`
+	UID             string     `json:"uid"`
+	Title           string     `json:"title"`
+	BookAuthor      string     `json:"book_author"`
+	HTML            string     `json:"html"`
+	Delta           string     `json:"delta"`
+	DateTimeCreated time.Time  `json:"date_created"`
+	DateTimeUpdated time.Time  `json:"date_updated"`
+	Chapters        []*Chapter `json:"chapters"`
 }
 
 type Chapter struct {
@@ -37,12 +40,15 @@ func CreateChapter(input string) []*Chapter {
 }
 
 func (db *DB) CreateBookReview(title, author, html, delta string, chapters []*Chapter) (*BookReview, error) {
+	now := time.Now().UTC()
 	bookReview := &BookReview{
-		Title:      title,
-		BookAuthor: author,
-		HTML:       html,
-		Delta:      delta,
-		Chapters:   chapters,
+		Title:           title,
+		BookAuthor:      author,
+		HTML:            html,
+		Delta:           delta,
+		DateTimeCreated: now,
+		DateTimeUpdated: now,
+		Chapters:        chapters,
 	}
 
 	err := bookReview.Save(db)
@@ -93,6 +99,8 @@ type BookReviewDB interface {
 func (br *BookReview) Save(db *DB) error {
 	if br.UID == "" {
 		br.UID = shortuuid.New()
+	} else {
+		br.DateTimeUpdated = time.Now().UTC()
 	}
 
 	err := db.Update(func(tx *bolt.Tx) error {
