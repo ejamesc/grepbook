@@ -2,6 +2,7 @@ package grepbook
 
 import (
 	"errors"
+	"time"
 
 	"github.com/boltdb/bolt"
 )
@@ -36,4 +37,8 @@ func (db *DB) CreateAllBuckets() error {
 		return err
 	}
 	return nil
+}
+
+func TimeNow() time.Time {
+	return time.Now().UTC()
 }

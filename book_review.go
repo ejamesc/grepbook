@@ -40,7 +40,7 @@ func CreateChapter(input string) []*Chapter {
 }
 
 func (db *DB) CreateBookReview(title, author, html, delta string, chapters []*Chapter) (*BookReview, error) {
-	now := time.Now().UTC()
+	now := TimeNow()
 	bookReview := &BookReview{
 		Title:           title,
 		BookAuthor:      author,
@@ -100,7 +100,7 @@ func (br *BookReview) Save(db *DB) error {
 	if br.UID == "" {
 		br.UID = shortuuid.New()
 	} else {
-		br.DateTimeUpdated = time.Now().UTC()
+		br.DateTimeUpdated = TimeNow()
 	}
 
 	err := db.Update(func(tx *bolt.Tx) error {

@@ -8,8 +8,6 @@ import (
 
 	"github.com/ejamesc/grepbook"
 	"github.com/gorilla/context"
-
-	"bitbucket.org/ejames/metacog"
 )
 
 const sessionName = "session"
@@ -29,7 +27,7 @@ func newMiddlewareLogger() *middlewareLogger {
 // loggingHandler is a middleware to log requests.
 func (a *App) loggingHandler(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, req *http.Request) {
-		t1 := metacog.TimeNow()
+		t1 := grepbook.TimeNow()
 		a.Log("Started %s %s", req.Method, req.URL.Path)
 
 		next.ServeHTTP(w, req)
