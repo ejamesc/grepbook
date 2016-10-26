@@ -91,7 +91,7 @@ func (db *DB) DeleteBookReview(uid string) error {
 }
 
 type BookReviewDB interface {
-	CreateBookReview(string, string, string, string, []Chapter) (*BookReview, error)
+	CreateBookReview(string, string, string, string, []*Chapter) (*BookReview, error)
 	GetBookReview(string) (*BookReview, error)
 	DeleteBookReview(string) error
 }

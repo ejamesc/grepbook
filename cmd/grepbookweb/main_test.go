@@ -2,11 +2,71 @@ package main_test
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"os"
 	"path/filepath"
 	"reflect"
 	"runtime"
+	"strings"
 	"testing"
+	"time"
+
+	"github.com/ejamesc/grepbook"
+	"github.com/ejamesc/grepbook/cmd/grepbookweb"
+	"github.com/kardianos/osext"
 )
+
+var bookReview1 = &grepbook.BookReview{
+	Title:           "War and Peace",
+	BookAuthor:      "Leo Tolstoy",
+	HTML:            "<p>Great book!</p>",
+	Delta:           "{}",
+	DateTimeCreated: time.Now().UTC(),
+	DateTimeUpdated: time.Now().UTC(),
+	Chapters:        []*grepbook.Chapter{},
+}
+var app *main.App
+
+func TestMain(m *testing.M) {
+	pwd, err := osext.ExecutableFolder()
+	if err != nil {
+		log.Fatalf("cannot retrieve present working directory: %s", err)
+	}
+	r := main.NewRouter()
+	app = main.SetupApp(r, []byte("some-secret"), pwd)
+
+	retCode := m.Run()
+	os.Exit(retCode)
+}
+
+type HandleTester func(method string, params url.Values) *httptest.ResponseRecorder
+
+// Given the current test runner and an http.Handler, generate a
+// HandleTester which will test its given input against the
+// handler.
+func GenerateHandleTester(t *testing.T, handleFunc http.Handler) HandleTester {
+	// Given a method type ("GET", "POST", etc) and
+	// parameters, serve the response against the handler and
+	// return the ResponseRecorder.
+	return func(method string, params url.Values) *httptest.ResponseRecorder {
+		req, err := http.NewRequest(
+			method,
+			"",
+			strings.NewReader(params.Encode()),
+		)
+		ok(t, err)
+		req.Header.Set(
+			"Content-Type",
+			"application/x-www-form-urlencoded; param=value",
+		)
+		w := httptest.NewRecorder()
+		handleFunc.ServeHTTP(w, req)
+		return w
+	}
+}
 
 // assert fails the test if the condition is false.
 func assert(tb testing.TB, condition bool, msg string, v ...interface{}) {
