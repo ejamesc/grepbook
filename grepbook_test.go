@@ -45,7 +45,12 @@ func TestMain(m *testing.M) {
 
 	user1, _ = testDB.CreateUser("test@test.com", "test")
 	chapters := grepbook.CreateChapter("Introduction, Prelude, Conclusion")
-	bookReview1, _ = testDB.CreateBookReview("The Inner Game of Tennis", "W. Timothy Gallwey", "<p>Great book!</p>", "{}", chapters)
+	bookReview1, _ = testDB.CreateBookReview(
+		"The Inner Game of Tennis",
+		"W. Timothy Gallwey",
+		"https://www.amazon.com/Inner-Game-Tennis-Classic-Performance/dp/0679778314/ref=sr_1_1?s=books&ie=UTF8&qid=1477563421&sr=1-1&keywords=inner+game+of+tennis",
+		"<p>Great book!</p>",
+		"{}", chapters)
 
 	retCode := m.Run()
 

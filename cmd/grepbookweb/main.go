@@ -42,7 +42,7 @@ type localPresenter struct {
 	globalPresenter
 }
 
-func SetupApp(r *Router, cookieSecretKey []byte, directoryPath string) *App {
+func SetupApp(r *Router, logger appLogger, cookieSecretKey []byte, directoryPath string) *App {
 	rndr := render.New(render.Options{
 		Directory:  path.Join(directoryPath, "templates"),
 		Extensions: []string{".html"},
@@ -60,7 +60,6 @@ func SetupApp(r *Router, cookieSecretKey []byte, directoryPath string) *App {
 	}
 
 	bm := bluemonday.UGCPolicy()
-	ml := newLogger()
 
 	return &App{
 		rndr:   rndr,
@@ -68,7 +67,7 @@ func SetupApp(r *Router, cookieSecretKey []byte, directoryPath string) *App {
 		gp:     gp,
 		store:  sessions.NewCookieStore(cookieSecretKey),
 		bm:     bm,
-		logr:   ml,
+		logr:   logger,
 	}
 }
 
@@ -99,7 +98,8 @@ func main() {
 
 	r := NewRouter()
 	cookieSecretKey := viper.GetString("cookie-secret")
-	a := SetupApp(r, []byte(cookieSecretKey), pwd)
+	logr := newLogger()
+	a := SetupApp(r, logr, []byte(cookieSecretKey), pwd)
 
 	common := alice.New(context.ClearHandler, a.loggingHandler, a.recoverHandler, a.userMiddlewareGenerator(db))
 

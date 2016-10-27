@@ -9,7 +9,13 @@ import (
 
 func TestCreateBookReview(t *testing.T) {
 	chapters := grepbook.CreateChapter("Introduction, Preface")
-	br, err := testDB.CreateBookReview("Superintelligence", "Nick Bostrom", "<p>Hello</p>", "{}", chapters)
+	br, err := testDB.CreateBookReview(
+		"Superintelligence",
+		"Nick Bostrom",
+		"https://www.amazon.com/Superintelligence-Dangers-Strategies-Nick-Bostrom/dp/1501227742",
+		"<p>Hello</p>",
+		"{}",
+		chapters)
 	ok(t, err)
 	defer testDB.DeleteBookReview(br.UID)
 
@@ -30,7 +36,12 @@ func TestGetBookReview(t *testing.T) {
 
 func TestDeleteBookReview(t *testing.T) {
 	chapters := grepbook.CreateChapter("Introduction, Preface")
-	br, err := testDB.CreateBookReview("Superintelligence", "Nick Bostrom", "<p>Hello</p>", "{}", chapters)
+	br, err := testDB.CreateBookReview(
+		"Superintelligence",
+		"Nick Bostrom",
+		"https://www.amazon.com/Superintelligence-Dangers-Strategies-Nick-Bostrom/dp/1501227742",
+		"<p>Hello</p>",
+		"{}", chapters)
 	ok(t, err)
 
 	err = testDB.DeleteBookReview(br.UID)

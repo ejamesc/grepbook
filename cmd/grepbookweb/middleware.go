@@ -94,3 +94,23 @@ func (a *App) userMiddlewareGenerator(db *grepbook.DB) func(http.Handler) http.H
 		return http.HandlerFunc(fn)
 	}
 }
+
+// Auth middleware is the middleware wrapper to protect authentication endpoints.
+func (a *App) authMiddleware(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, req *http.Request) {
+		user := getUser(req)
+
+		if user == nil {
+			err := a.saveFlash(w, req, "You need to login to view that page!")
+			if err != nil {
+				a.logr.Log("Error saving flash: %s", err)
+			}
+			http.Redirect(w, req, "/login", 302)
+			return
+		} else {
+			next.ServeHTTP(w, req)
+		}
+	}
+
+	return http.HandlerFunc(fn)
+}

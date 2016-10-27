@@ -14,6 +14,7 @@ type BookReview struct {
 	UID             string     `json:"uid"`
 	Title           string     `json:"title"`
 	BookAuthor      string     `json:"book_author"`
+	BookURL         string     `json:"slug"`
 	HTML            string     `json:"html"`
 	Delta           string     `json:"delta"`
 	DateTimeCreated time.Time  `json:"date_created"`
@@ -39,11 +40,12 @@ func CreateChapter(input string) []*Chapter {
 	return res
 }
 
-func (db *DB) CreateBookReview(title, author, html, delta string, chapters []*Chapter) (*BookReview, error) {
+func (db *DB) CreateBookReview(title, author, bookURL, html, delta string, chapters []*Chapter) (*BookReview, error) {
 	now := TimeNow()
 	bookReview := &BookReview{
 		Title:           title,
 		BookAuthor:      author,
+		BookURL:         bookURL,
 		HTML:            html,
 		Delta:           delta,
 		DateTimeCreated: now,
@@ -91,7 +93,7 @@ func (db *DB) DeleteBookReview(uid string) error {
 }
 
 type BookReviewDB interface {
-	CreateBookReview(string, string, string, string, []*Chapter) (*BookReview, error)
+	CreateBookReview(string, string, string, string, string, []*Chapter) (*BookReview, error)
 	GetBookReview(string) (*BookReview, error)
 	DeleteBookReview(string) error
 }

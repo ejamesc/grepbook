@@ -13,7 +13,7 @@ type MockBookReviewDB struct {
 	shouldFail bool
 }
 
-func (db *MockBookReviewDB) CreateBookReview(title, author, html, delta string, chapters []*grepbook.Chapter) (*grepbook.BookReview, error) {
+func (db *MockBookReviewDB) CreateBookReview(title, author, bookURL, html, delta string, chapters []*grepbook.Chapter) (*grepbook.BookReview, error) {
 	if db.shouldFail {
 		return nil, fmt.Errorf("some error")
 	}
@@ -22,6 +22,7 @@ func (db *MockBookReviewDB) CreateBookReview(title, author, html, delta string, 
 		Title:           title,
 		BookAuthor:      author,
 		HTML:            html,
+		BookURL:         bookURL,
 		Delta:           delta,
 		DateTimeCreated: now,
 		DateTimeUpdated: now,

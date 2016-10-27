@@ -23,6 +23,7 @@ var bookReview1 = &grepbook.BookReview{
 	Title:           "War and Peace",
 	BookAuthor:      "Leo Tolstoy",
 	HTML:            "<p>Great book!</p>",
+	BookURL:         "https://www.amazon.com/Superintelligence-Dangers-Strategies-Nick-Bostrom/dp/1501227742",
 	Delta:           "{}",
 	DateTimeCreated: time.Now().UTC(),
 	DateTimeUpdated: time.Now().UTC(),
@@ -36,10 +37,17 @@ func TestMain(m *testing.M) {
 		log.Fatalf("cannot retrieve present working directory: %s", err)
 	}
 	r := main.NewRouter()
-	app = main.SetupApp(r, []byte("some-secret"), pwd)
+	ml := &MockLogger{}
+	app = main.SetupApp(r, ml, []byte("some-secret"), pwd)
 
 	retCode := m.Run()
 	os.Exit(retCode)
+}
+
+type MockLogger struct{}
+
+func (ml *MockLogger) Log(str string, v ...interface{}) {
+	fmt.Printf("[%s] "+str, v...)
 }
 
 type HandleTester func(method string, params url.Values) *httptest.ResponseRecorder
