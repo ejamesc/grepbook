@@ -8,6 +8,16 @@ import (
 
 func (a *App) IndexHandler(db grepbook.BookReviewDB) HandlerWithError {
 	return func(w http.ResponseWriter, req *http.Request) error {
+		user := getUser(req)
+		p := &localPresenter{PageTitle: "", PageURL: "", globalPresenter: a.gp, User: user}
+
+		err := a.rndr.HTML(w, http.StatusOK, "index", p)
+		if err != nil {
+			a.logr.Log(newRenderErrMsg(err))
+		}
+		return nil
+	}
+}
 		return nil
 	}
 }

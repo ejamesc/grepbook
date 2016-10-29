@@ -36,3 +36,7 @@ func newError(code int, msg string, err error) *StatusError {
 func newSessionSaveError(err error) *StatusError {
 	return &StatusError{Code: 500, Err: fmt.Errorf("problem saving to cookie store: %s", err)}
 }
+
+func newRenderErrMsg(err error) string {
+	return fmt.Sprintf("error rendering HTML: %s", err)
+}

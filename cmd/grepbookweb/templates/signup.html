@@ -1,0 +1,18 @@
+{{ define "header-signup" }}{{ end }}
+{{ define "scripts-signup" }}{{ end }}
+
+<div class='row full-width'>
+  <div class='small-12 medium-6 medium-offset-3 columns'>
+    <h2>Sign Up</h2>
+    <h4>There can only be one user. One user to rule them all, and in darkness bind them.</h4>
+    <form role='form' action='/signup' method='post'>
+      <label>Email
+        <input type="text" name="email" placeholder="Email"/>
+      </label>
+      <label>Password
+        <input type="text" name="password" placeholder="Password"/>
+      </label>
+      <input class="button success" type="submit" value="Onwards!" />
+    </form>
+  </div>
+</div>

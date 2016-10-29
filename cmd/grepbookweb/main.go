@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"net/http"
 	"path"
 
 	"github.com/boltdb/bolt"
@@ -16,6 +17,8 @@ import (
 	"github.com/spf13/viper"
 	"github.com/unrolled/render"
 )
+
+const isDevelopment = true
 
 // App is the main app.
 type App struct {
@@ -42,9 +45,9 @@ type localPresenter struct {
 	globalPresenter
 }
 
-func SetupApp(r *Router, logger appLogger, cookieSecretKey []byte, directoryPath string) *App {
+func SetupApp(r *Router, logger appLogger, cookieSecretKey []byte, templateDirectoryPath string) *App {
 	rndr := render.New(render.Options{
-		Directory:  path.Join(directoryPath, "templates"),
+		Directory:  templateDirectoryPath,
 		Extensions: []string{".html"},
 		Layout:     "base",
 		Funcs: []template.FuncMap{
@@ -82,26 +85,46 @@ func main() {
 		log.Fatal("unable to open bolt db: %s", err)
 	}
 	db := &grepbook.DB{boltdb}
+	defer db.Close()
 	err = db.CreateAllBuckets()
 	if err != nil {
 		log.Fatal("unable to create all buckets: %s", err)
 	}
 
 	// Load configuration
-	viper.SetConfigName("config")
-	viper.AddConfigPath(pwd)
-	viper.AddConfigPath("/Users/cedric/Projects/gocode/src/github.com/ejamesc/grepbook")
-	err = viper.ReadInConfig() // Find and read the config file
-	if err != nil {
+	err = LoadConfiguration(pwd)
+	if err != nil && viper.GetBool("isProduction") {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
+	staticFilePath := path.Join(viper.GetString("path"), "static")
+	templateFolderPath := path.Join(viper.GetString("path"), "templates")
 
 	r := NewRouter()
-	cookieSecretKey := viper.GetString("cookie-secret")
+	cookieSecretKey := viper.GetString("cookieSecret")
 	logr := newLogger()
-	a := SetupApp(r, logr, []byte(cookieSecretKey), pwd)
+	a := SetupApp(r, logr, []byte(cookieSecretKey), templateFolderPath)
 
 	common := alice.New(context.ClearHandler, a.loggingHandler, a.recoverHandler, a.userMiddlewareGenerator(db))
 
 	r.Get("/", common.Then(a.Wrap(a.IndexHandler(db))))
+	r.Get("/login", common.Then(a.Wrap(a.LoginPageHandler())))
+
+	r.Get("/signup", common.Then(a.Wrap(a.SignupPageHandler(db))))
+	r.Post("/signup", common.Then(a.Wrap(a.SignupPostHandler(db))))
+
+	r.ServeFiles("/static/*filepath", http.Dir(staticFilePath))
+
+	http.ListenAndServe(":3000", r)
+}
+
+func LoadConfiguration(pwd string) error {
+	viper.SetConfigName("grepbook-config")
+	viper.AddConfigPath(pwd)
+	devPath := "/Users/cedric/Projects/gocode/src/github.com/ejamesc/grepbook/cmd/grepbookweb"
+	viper.AddConfigPath(devPath)
+
+	viper.SetDefault("path", devPath)
+	viper.SetDefault("cookieSecret", "@%3V?#ay!ONfzV7N&3|{?[YT6-gDHgZIhP_;qaw5e7i3t`SAT)w&+GO*>w2EX+[5")
+	viper.SetDefault("isProduction", true)
+	return viper.ReadInConfig() // Find and read the config file
 }

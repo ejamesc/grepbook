@@ -49,5 +49,5 @@ func TestIndexHandler(t *testing.T) {
 	indexHandler := app.IndexHandler(mockDB)
 	test := GenerateHandleTester(t, app.Wrap(indexHandler))
 	w := test("GET", url.Values{})
-	assert(t, http.StatusOK == w.Code, "expected index page to return %d", http.StatusOK)
+	assert(t, http.StatusOK == w.Code, "expected index page to return 200 instead got %d", w.Code)
 }

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ .SiteName }} {{ if .PageTitle }}&middot; {{ .PageTitle }}{{ end }}</title>
+    <meta content='{{ .Description }}' name='description' />
+    <meta itemprop="name" content="{{ .PageTitle }}" />
+    <meta itemprop="description" content="{{ .Description }}" />
+    <meta property="og:title" content="{{ .PageTitle }} &middot; {{ .SiteName }}" />
+    <meta property="og:description" content="{{ .Description }}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="{{ .SiteName }} " />
+    <meta property="og:url" content="{{ .SiteURL }}/{{ .PageURL }}" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="{{ .PageTitle }} - {{ .SiteName }}" />
+    <meta name="twitter:description" content="{{ .Description }}" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+
+    <link href='/static/css/normalize.css' type='text/css' rel='stylesheet' />
+    <link href='/static/css/quill.snow.css' type='text/css' rel='stylesheet' />
+    <link href='/static/css/foundation-6.2.4.min.css' type='text/css' rel='stylesheet' />
+
+    <link href='/static/css/style.css' type='text/css' rel='stylesheet' />
+    {{ partial "header" }}
+  </head>
+  <body>
+    <header>
+    <div class="row full-width">
+      <div class="small-12 columns">
+        <h3>grepbook</h3>
+      </div>
+    </div>
+    </header>
+
+    {{ yield }}
+
+    <hr/>
+    <footer class="row full-width">
+    <div class='medium-6 small-12 columns footer-left'>
+      Book summaries for people who forget. This is an @ejames_c dig.
+    </div>
+    </footer>
+  </body>
+  <!--<script type="text/javascript" src="/static/js/vendor/mithril.min.js"></script>-->
+  <script type="text/javascript" src="/static/js/vendor/quill.min.js"></script>
+  <script type="text/javascript" src="/static/js/app.js"></script>
+  {{ if .User }}
+  {{ end }}
+  {{ partial "scripts" }}
+</html>
+

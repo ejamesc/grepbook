@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"reflect"
 	"runtime"
@@ -16,7 +17,7 @@ import (
 
 	"github.com/ejamesc/grepbook"
 	"github.com/ejamesc/grepbook/cmd/grepbookweb"
-	"github.com/kardianos/osext"
+	"github.com/spf13/viper"
 )
 
 var bookReview1 = &grepbook.BookReview{
@@ -32,13 +33,14 @@ var bookReview1 = &grepbook.BookReview{
 var app *main.App
 
 func TestMain(m *testing.M) {
-	pwd, err := osext.ExecutableFolder()
-	if err != nil {
-		log.Fatalf("cannot retrieve present working directory: %s", err)
-	}
 	r := main.NewRouter()
 	ml := &MockLogger{}
-	app = main.SetupApp(r, ml, []byte("some-secret"), pwd)
+	err := main.LoadConfiguration("")
+	if err != nil {
+		log.Printf("error loading configuration file: %s", err)
+	}
+	templatePath := path.Join(viper.GetString("path"), "templates")
+	app = main.SetupApp(r, ml, []byte("some-secret"), templatePath)
 
 	retCode := m.Run()
 	os.Exit(retCode)
@@ -47,7 +49,7 @@ func TestMain(m *testing.M) {
 type MockLogger struct{}
 
 func (ml *MockLogger) Log(str string, v ...interface{}) {
-	fmt.Printf("[%s] "+str, v...)
+	fmt.Printf(str+"\n", v...)
 }
 
 type HandleTester func(method string, params url.Values) *httptest.ResponseRecorder
