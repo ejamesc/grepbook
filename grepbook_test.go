@@ -28,13 +28,13 @@ func TestMain(m *testing.M) {
 	}
 	db, err := bolt.Open(path.Join(pwd, "test.db"), 0600, nil)
 	if err != nil {
-		log.Fatal("unable to open bolt db: %s", err)
+		log.Fatalf("unable to open bolt db: %s", err)
 	}
 
-	testDB = &grepbook.DB{db}
+	testDB = &grepbook.DB{DB: db}
 	err = testDB.CreateAllBuckets()
 	if err != nil {
-		log.Fatal("unable to create all buckets: %s", err)
+		log.Fatalf("unable to create all buckets: %s", err)
 	}
 
 	// Consider this a test for DoesAnyUserExist

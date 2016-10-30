@@ -25,10 +25,12 @@
     {{ partial "header" }}
   </head>
   <body>
+    {{ if .User }}<form id='logout' role='form' action='/logout' method='post'></form>{{ end }}
     <header>
     <div class="row full-width">
       <div class="small-12 columns">
         <h3>grepbook</h3>
+        {{ if .User }}&middot; <a href="javascript:;" onclick='document.forms["logout"].submit()'>logout</a>{{ end }}
       </div>
     </div>
     </header>
