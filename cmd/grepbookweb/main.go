@@ -112,6 +112,9 @@ func main() {
 
 	r.Get("/", common.Then(a.Wrap(a.IndexHandler(db))))
 	r.Get("/login", common.Then(a.Wrap(a.LoginPageHandler())))
+	r.Post("/login", common.Then(a.Wrap(a.LoginPostHandler(db))))
+
+	r.Post("/logout", common.Then(a.Wrap(a.LogoutHandler())))
 
 	r.Get("/signup", common.Then(a.Wrap(a.SignupPageHandler(db))))
 	r.Post("/signup", common.Then(a.Wrap(a.SignupPostHandler(db))))

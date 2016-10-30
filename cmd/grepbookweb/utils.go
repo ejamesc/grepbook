@@ -29,3 +29,11 @@ func getUser(req *http.Request) *grepbook.User {
 	}
 	return nil
 }
+
+// getFlashes gets all the flases from request, and returns it.
+func (a *App) getFlashes(w http.ResponseWriter, req *http.Request) []interface{} {
+	session, _ := a.store.Get(req, SessionName)
+	fs := session.Flashes()
+	session.Save(req, w)
+	return fs
+}

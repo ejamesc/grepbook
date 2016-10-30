@@ -142,9 +142,9 @@ func (db *DB) IsUserPasswordCorrect(email, password string) bool {
 
 type UserDB interface {
 	DoesAnyUserExist() bool
-	CreateUser(string, string) (*User, error)
-	GetUser(string) (*User, error)
-	DeleteUser(string) error
-	IsUserPasswordCorrect(string, string) bool
-	CreateSessionForUser(string) (*Session, error)
+	CreateUser(email, password string) (*User, error)
+	GetUser(email string) (*User, error)
+	IsUserPasswordCorrect(email, password string) bool
+	DeleteUser(email string) error
+	CreateSessionForUser(email string) (*Session, error)
 }

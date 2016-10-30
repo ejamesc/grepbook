@@ -3,10 +3,12 @@ package main_test
 import (
 	"fmt"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"testing"
 
 	"github.com/ejamesc/grepbook"
+	"github.com/ejamesc/grepbook/cmd/grepbookweb"
 )
 
 type MockUserDB struct {
@@ -144,4 +146,27 @@ func TestLoginPostHandler(t *testing.T) {
 	assert(t,
 		len(w.HeaderMap["Location"]) > 0 && w.HeaderMap["Location"][0] == "/login",
 		"expected redirect location on unsuccessful login to be /login instead got %s", w.HeaderMap["Location"])
+}
+
+func TestLogoutHandler(t *testing.T) {
+	lp := app.Wrap(app.LogoutHandler())
+	req, err := http.NewRequest("POST", "", nil)
+	ok(t, err)
+	w := httptest.NewRecorder()
+
+	store := app.GetStore()
+	ss, err := store.Get(req, main.SessionName)
+	ok(t, err)
+	ss.Values[main.SessionKeyName] = "abcd1234"
+	ss.Save(req, w)
+
+	lp.ServeHTTP(w, req)
+	assert(t, w.Code == http.StatusFound, "expected successful logout to redirect 302 instead got %d", w.Code)
+	assert(t,
+		len(w.HeaderMap["Location"]) > 0 && w.HeaderMap["Location"][0] == "/",
+		"expected redirect location on successful logout to be / instead got %s", w.HeaderMap["Location"])
+
+	session, err := store.Get(req, main.SessionName)
+	_, exists := session.Values[main.SessionKeyName]
+	assert(t, !exists, "expected session to have been deleted")
 }

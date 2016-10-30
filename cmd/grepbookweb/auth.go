@@ -15,22 +15,82 @@ func (a *App) LoginPageHandler() HandlerWithError {
 			http.Redirect(w, req, "/", 302)
 			return nil
 		}
-		p := &localPresenter{PageTitle: "Login", PageURL: "/login", globalPresenter: a.gp}
-		a.rndr.HTML(w, http.StatusOK, "login", p)
+		fs := a.getFlashes(w, req)
+		p := &struct {
+			Flashes []interface{}
+			localPresenter
+		}{
+			Flashes:        fs,
+			localPresenter: localPresenter{PageTitle: "Login", PageURL: "/login", globalPresenter: a.gp}}
+
+		err := a.rndr.HTML(w, http.StatusOK, "login", p)
+		if err != nil {
+			a.logr.Log(newRenderErrMsg(err))
+		}
 		return nil
 	}
 }
 
 func (a *App) LoginPostHandler(db grepbook.UserDB) HandlerWithError {
 	return func(w http.ResponseWriter, req *http.Request) error {
-		//email, pass := req.FormValue("email"), req.FormValue("password")
+		user := getUser(req)
+		if user != nil {
+			http.Redirect(w, req, "/", 302)
+			return nil
+		}
+		email, pass := req.FormValue("email"), req.FormValue("password")
+		if !govalidator.IsEmail(email) {
+			a.saveFlash(w, req, "That's not a valid email address")
+			http.Redirect(w, req, "/login", 302)
+			return newError(400, "Invalid email provided", nil)
+		}
+
+		if strings.TrimSpace(pass) == "" {
+			a.saveFlash(w, req, "You need to provide a password")
+			http.Redirect(w, req, "/login", 302)
+			return newError(400, "No password provided", nil)
+		}
+
+		user, err := db.GetUser(email)
+		if err != nil {
+			a.saveFlash(w, req, "Whoops, your email or password is incorrect!")
+			a.logr.Log("Error getting user by email: %s", err)
+			http.Redirect(w, req, "/login", 302)
+			return nil
+		}
+
+		ss, err := a.store.Get(req, SessionName)
+		if err != nil {
+			return newError(500, "error getting store", err)
+		}
+
+		if db.IsUserPasswordCorrect(user.Email, pass) {
+			sess, err := db.CreateSessionForUser(user.Email)
+			if err != nil {
+				a.logr.Log("error creating user session %s", err)
+				http.Redirect(w, req, "/login", 302)
+				return newSessionSaveError(err)
+			}
+
+			ss.Values[SessionKeyName] = sess.Key
+			ss.Save(req, w)
+			http.Redirect(w, req, "/", 302)
+		} else {
+			a.saveFlash(w, req, "Wrong email or password!")
+			ss.Save(req, w)
+			http.Redirect(w, req, "/login", 302)
+		}
 
 		return nil
 	}
 }
 
-func (a *App) LogoutHandler(db grepbook.UserDB) HandlerWithError {
+func (a *App) LogoutHandler() HandlerWithError {
 	return func(w http.ResponseWriter, req *http.Request) error {
+		session, _ := a.store.Get(req, SessionName)
+		delete(session.Values, SessionKeyName)
+		session.Save(req, w)
+		http.Redirect(w, req, "/", 302)
 		return nil
 	}
 }

@@ -4,13 +4,23 @@
 <div class='row full-width'>
   <div class='small-12 medium-6 medium-offset-3 columns'>
     <h2>Login</h2>
-    <label>Email
-      <input type="text" name="email" placeholder="Email"/>
-    </label>
-    <label>Password
-      <input type="text" name="password" placeholder="Password"/>
-    </label>
-    <input class="button success" type="submit" value="Onwards!" />
+    {{ if ne (len .Flashes) 0 }}
+      {{ range .Flashes }}
+      <div data-alert class='alert-box warning' id='alert-box'>
+        {{ . }}
+        <a href='#' onclick='hideFlash(this)' class='close'>&times;</a>
+      </div>
+      {{ end }}
+    {{ end }}
+    <form role='form' action='/login' method='post'>
+      <label>Email
+        <input type="text" name="email" placeholder="Email"/>
+      </label>
+      <label>Password
+        <input type="password" name="password" placeholder="Password"/>
+      </label>
+      <input class="button success" type="submit" value="Onwards!" />
+    </form>
   </div>
 </div>
 
