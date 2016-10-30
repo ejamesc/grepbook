@@ -9,7 +9,7 @@ import (
 
 // saveFlash is a utility helper to save Flashes to the session cookie.
 func (a *App) saveFlash(w http.ResponseWriter, req *http.Request, msg string) error {
-	session, err := a.store.Get(req, sessionName)
+	session, err := a.store.Get(req, SessionName)
 	if err != nil {
 		return err
 	}
@@ -23,7 +23,7 @@ func (a *App) saveFlash(w http.ResponseWriter, req *http.Request, msg string) er
 
 // getUser returns the user from the context object in the request.
 func getUser(req *http.Request) *grepbook.User {
-	if rv := context.Get(req, userKeyName); rv != nil {
+	if rv := context.Get(req, UserKeyName); rv != nil {
 		res := rv.(*grepbook.User)
 		return res
 	}

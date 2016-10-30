@@ -30,6 +30,10 @@ type App struct {
 	logr   appLogger
 }
 
+func (a *App) GetStore() *sessions.CookieStore {
+	return a.store
+}
+
 // globalPresenter contains the fields necessary for presenting in all templates
 type globalPresenter struct {
 	SiteName    string

@@ -47,7 +47,7 @@ func (db *MockBookReviewDB) DeleteBookReview(uid string) error {
 func TestIndexHandler(t *testing.T) {
 	mockDB := &MockBookReviewDB{shouldFail: true}
 	indexHandler := app.IndexHandler(mockDB)
-	test := GenerateHandleTester(t, app.Wrap(indexHandler))
+	test := GenerateHandleTester(t, app.Wrap(indexHandler), false)
 	w := test("GET", url.Values{})
 	assert(t, http.StatusOK == w.Code, "expected index page to return 200 instead got %d", w.Code)
 }

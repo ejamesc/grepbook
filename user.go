@@ -146,4 +146,5 @@ type UserDB interface {
 	GetUser(string) (*User, error)
 	DeleteUser(string) error
 	IsUserPasswordCorrect(string, string) bool
+	CreateSessionForUser(string) (*Session, error)
 }

@@ -10,9 +10,9 @@ import (
 	"github.com/gorilla/context"
 )
 
-const sessionName = "session"
-const userKeyName = "user"
-const sessionKeyName = "session_key"
+const SessionName = "session"
+const UserKeyName = "user"
+const SessionKeyName = "session_key"
 
 // appLogger is an interface for logging.
 // Used to introduce a seam into the app, for testing.
@@ -74,8 +74,8 @@ func (a *App) recoverHandler(next http.Handler) http.Handler {
 func (a *App) userMiddlewareGenerator(db *grepbook.DB) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, req *http.Request) {
-			session, _ := a.store.Get(req, sessionName)
-			sessionKey, ok := session.Values[sessionKeyName]
+			session, _ := a.store.Get(req, SessionName)
+			sessionKey, ok := session.Values[SessionKeyName]
 
 			if ok {
 				ssk := sessionKey.(string)
@@ -85,7 +85,7 @@ func (a *App) userMiddlewareGenerator(db *grepbook.DB) func(http.Handler) http.H
 					delete(session.Values, sessionKey)
 					session.Save(req, w)
 				} else {
-					context.Set(req, userKeyName, u)
+					context.Set(req, UserKeyName, u)
 				}
 			}
 			next.ServeHTTP(w, req)

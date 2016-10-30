@@ -17,6 +17,7 @@ import (
 
 	"github.com/ejamesc/grepbook"
 	"github.com/ejamesc/grepbook/cmd/grepbookweb"
+	"github.com/gorilla/context"
 	"github.com/spf13/viper"
 )
 
@@ -30,6 +31,7 @@ var bookReview1 = &grepbook.BookReview{
 	DateTimeUpdated: time.Now().UTC(),
 	Chapters:        []*grepbook.Chapter{},
 }
+
 var app *main.App
 
 func TestMain(m *testing.M) {
@@ -49,7 +51,7 @@ func TestMain(m *testing.M) {
 type MockLogger struct{}
 
 func (ml *MockLogger) Log(str string, v ...interface{}) {
-	fmt.Printf(str+"\n", v...)
+	fmt.Printf("mockLogger: "+str+"\n", v...)
 }
 
 type HandleTester func(method string, params url.Values) *httptest.ResponseRecorder
@@ -57,7 +59,11 @@ type HandleTester func(method string, params url.Values) *httptest.ResponseRecor
 // Given the current test runner and an http.Handler, generate a
 // HandleTester which will test its given input against the
 // handler.
-func GenerateHandleTester(t *testing.T, handleFunc http.Handler) HandleTester {
+func GenerateHandleTester(
+	t *testing.T,
+	handleFunc http.Handler,
+	loggedIn bool,
+) HandleTester {
 	// Given a method type ("GET", "POST", etc) and
 	// parameters, serve the response against the handler and
 	// return the ResponseRecorder.
@@ -73,6 +79,9 @@ func GenerateHandleTester(t *testing.T, handleFunc http.Handler) HandleTester {
 			"application/x-www-form-urlencoded; param=value",
 		)
 		w := httptest.NewRecorder()
+		if loggedIn {
+			context.Set(req, main.UserKeyName, user1)
+		}
 		handleFunc.ServeHTTP(w, req)
 		return w
 	}

@@ -45,6 +45,13 @@ func (db *MockUserDB) IsUserPasswordCorrect(op, np string) bool {
 	return db.isUserPasswordCorrect
 }
 
+func (db *MockUserDB) CreateSessionForUser(email string) (*grepbook.Session, error) {
+	if db.hasError {
+		return nil, fmt.Errorf("some error")
+	}
+	return &grepbook.Session{Key: "abcd1234", Email: email}, nil
+}
+
 func TestSignupPageHandler(t *testing.T) {
 	// Test when no user exists
 	mockDB := &MockUserDB{
@@ -52,7 +59,7 @@ func TestSignupPageHandler(t *testing.T) {
 		userExists: false,
 	}
 	signupPageHandler := app.SignupPageHandler(mockDB)
-	test := GenerateHandleTester(t, app.Wrap(signupPageHandler))
+	test := GenerateHandleTester(t, app.Wrap(signupPageHandler), false)
 	w := test("GET", url.Values{})
 	assert(t, w.Code == http.StatusOK, "expected signup page to return 200 instead got %d", w.Code)
 
@@ -69,7 +76,7 @@ func TestSignupPostHandler(t *testing.T) {
 		userExists: true,
 	}
 	signupPostHandler := app.SignupPostHandler(mockDB)
-	test := GenerateHandleTester(t, app.Wrap(signupPostHandler))
+	test := GenerateHandleTester(t, app.Wrap(signupPostHandler), false)
 	w := test("POST", url.Values{})
 	assert(t, w.Code == http.StatusFound, "expected signup with user to redirect 302 instead got %d", w.Code)
 	assert(
@@ -85,6 +92,7 @@ func TestSignupPostHandler(t *testing.T) {
 	assert(t,
 		len(w.HeaderMap["Location"]) > 0 && w.HeaderMap["Location"][0] == "/",
 		"expected redirect location on successful signup to be / instead got %s", w.HeaderMap["Location"])
+	assert(t, len(w.HeaderMap["Set-Cookie"]) > 0, "expected session cookie to be set on successful signup.")
 
 	// Test has bad form inputs
 	w = test("POST", url.Values{"email": {"blah"}, "password": {""}})
@@ -96,4 +104,44 @@ func TestSignupPostHandler(t *testing.T) {
 	mockDB.hasError = true
 	w = test("POST", url.Values{"email": {"test@test.com"}, "password": {"temporary"}})
 	assert(t, w.Code == http.StatusInternalServerError, "expected error to trigger 500 instead got %d", w.Code)
+}
+
+func TestLoginPageHandler(t *testing.T) {
+	lp := app.LoginPageHandler()
+	test := GenerateHandleTester(t, app.Wrap(lp), false)
+	w := test("GET", url.Values{})
+	assert(t, w.Code == http.StatusOK, "expected signup page to return 200 instead got %d", w.Code)
+
+	// Test when user is already logged in
+	// You need to set the session with the key
+	test = GenerateHandleTester(t, app.Wrap(lp), true)
+	w = test("GET", url.Values{})
+	assert(t, w.Code == http.StatusFound, "expected logged in user to redirect away from login page, instead got %d", w.Code)
+	assert(t,
+		len(w.HeaderMap["Location"]) > 0 && w.HeaderMap["Location"][0] == "/",
+		"expected redirect location on already logged in user to be / instead got %s", w.HeaderMap["Location"])
+}
+
+func TestLoginPostHandler(t *testing.T) {
+	mockDB := &MockUserDB{
+		hasError:              false,
+		isUserPasswordCorrect: true,
+		userExists:            true,
+	}
+	lp := app.LoginPostHandler(mockDB)
+	test := GenerateHandleTester(t, app.Wrap(lp), false)
+	w := test("POST", url.Values{"email": {"test@test.com"}, "password": {"temporary"}})
+	assert(t, w.Code == http.StatusFound, "expected successful login with proper POST inputs to redirect 302 instead got %d", w.Code)
+	assert(t,
+		len(w.HeaderMap["Location"]) > 0 && w.HeaderMap["Location"][0] == "/",
+		"expected redirect location on successful login to be / instead got %s", w.HeaderMap["Location"])
+	assert(t, len(w.HeaderMap["Set-Cookie"]) > 0, "expected session cookie to be set on successful login.")
+
+	// Wrong password
+	mockDB.isUserPasswordCorrect = false
+	w = test("POST", url.Values{"email": {"test@test.com"}, "password": {"temporary"}})
+	assert(t, w.Code == http.StatusFound, "expected successful login with proper POST inputs to redirect 302 instead got %d", w.Code)
+	assert(t,
+		len(w.HeaderMap["Location"]) > 0 && w.HeaderMap["Location"][0] == "/login",
+		"expected redirect location on unsuccessful login to be /login instead got %s", w.HeaderMap["Location"])
 }

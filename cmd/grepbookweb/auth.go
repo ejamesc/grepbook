@@ -10,6 +10,11 @@ import (
 
 func (a *App) LoginPageHandler() HandlerWithError {
 	return func(w http.ResponseWriter, req *http.Request) error {
+		user := getUser(req)
+		if user != nil {
+			http.Redirect(w, req, "/", 302)
+			return nil
+		}
 		p := &localPresenter{PageTitle: "Login", PageURL: "/login", globalPresenter: a.gp}
 		a.rndr.HTML(w, http.StatusOK, "login", p)
 		return nil
@@ -57,10 +62,18 @@ func (a *App) SignupPostHandler(db grepbook.UserDB) HandlerWithError {
 			return nil
 		}
 
-		_, err := db.CreateUser(email, pass)
+		user, err := db.CreateUser(email, pass)
 		if err != nil {
 			return err
 		}
+
+		sess, err := db.CreateSessionForUser(user.Email)
+		if err != nil {
+			return err
+		}
+		ss, _ := a.store.Get(req, SessionName)
+		ss.Values[SessionKeyName] = sess.Key
+		ss.Save(req, w)
 		http.Redirect(w, req, "/", 302)
 		return nil
 	}
