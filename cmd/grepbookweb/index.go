@@ -30,6 +30,18 @@ func (a *App) AboutHandler() HandlerWithError {
 		return nil
 	}
 }
+
+func (a *App) ReadHandler(db grepbook.BookReviewDB) HandlerWithError {
+	return func(w http.ResponseWriter, req *http.Request) error {
+		user := getUser(req)
+		p := &localPresenter{PageTitle: "Summary template", PageURL: "/summary", globalPresenter: a.gp, User: user}
+		err := a.rndr.HTML(w, http.StatusOK, "read", p)
+		if err != nil {
+			a.logr.Log(newRenderErrMsg(err))
+		}
+		return nil
+	}
+}
 		return nil
 	}
 }

@@ -1,0 +1,28 @@
+{{ define "header-read" }}
+  {{ if .User }}
+    <link href='/static/css/quill.snow.css' type='text/css' rel='stylesheet' />
+    {{ end }}
+{{ end }}
+{{ define "scripts-read" }}
+  {{ if .User }}
+  <script type="text/javascript" src="/static/js/vendor/quill.min.js"></script>
+  {{ end }}
+{{ end }}
+
+<div class='row'>
+  <div class='small-12 medium-10 medium-offset-1 columns'>
+    <h2>Superintelligence</h2>
+    <h5 class='summary-subheader'>by Nick Bostrom &middot; 15 July 2016 &middot; <a href='https://www.amazon.com/Superintelligence-Dangers-Strategies-Nick-Bostrom/dp/1501227742'>Buy from Amazon</a></h5>
+    <span class='label success summary-ongoing'>Ongoing</span>
+    <hr/>
+    <div {{ if .User }}id='editor' {{ end }}>
+      <p>This is some demo text.</p>
+      <h1>This is a demo header</h1>
+      <p>But the truth is that retention is difficult to measure.</p>
+      <h2>Some other header</h2>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer imperdiet felis vel lorem luctus, eget interdum justo venenatis. In id lacus hendrerit arcu imperdiet scelerisque sed et nunc. Quisque sed enim ut tellus tincidunt imperdiet non eget nulla. Nam et commodo purus. Nullam ultricies arcu tortor, ultrices imperdiet mi porttitor vel. Curabitur lacinia dignissim mauris, id volutpat velit. Etiam sagittis enim eros, ac fringilla ante gravida ut. Nam varius velit at nibh accumsan egestas. Donec in elit eros. Cras ultricies ut odio at euismod. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+
+      <p>Phasellus sit amet lectus at enim sagittis feugiat vitae vel mi. Nulla at diam efficitur, euismod nibh at, molestie nibh. Nam sit amet nibh tellus. Duis dui orci, ullamcorper vitae suscipit sed, aliquam nec justo. Praesent a nunc ut justo auctor feugiat. Donec tristique libero at felis condimentum, in accumsan tellus lobortis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut eu laoreet velit.</p>
+    </div>
+  </div>
+</div>

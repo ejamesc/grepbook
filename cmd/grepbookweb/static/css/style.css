@@ -68,8 +68,8 @@ header h1 {
   display: inline-block;
 }
 header h3 { 
-display: inline-block;
-font-size: 1rem !important;
+  display: inline-block;
+  font-size: 1rem !important;
 }
 
 .header-actions {
@@ -90,6 +90,36 @@ nav.header-actions ul li {
 /* EDITING STYLES */
 #editor {
   height: 450px;
+}
+
+/* INDEX PAGE */
+.date-block { 
+  padding-top: 10px;
+  margin-left: -10px;
+  font-style: italic;
+  color: #666;
+}
+
+.summary-block {
+  border-bottom: 1px solid #ddd;
+}
+
+.completed-heading {
+  margin-top: 30px;
+}
+
+/* SUMMARY READ STYLES */
+.summary-subheader {
+  display: inline-block;
+}
+
+.summary-ongoing {
+  float: right;
+  display: inline-block;
+  padding: 7px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
 }
 
 /* FOOTER */

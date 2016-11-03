@@ -1,11 +1,59 @@
-{{ define "header-index" }}{{ end }}
+{{ define "header-index" }}
+<link rel="stylesheet" href="/static/css/vendor/css/font-awesome.min.css">
+{{ end }}
 {{ define "scripts-index" }}{{ end }}
 
-<div class='row full-width'>
+<div class='row'>
   <div class='small-12 medium-10 medium-offset-1 columns'>
-    <input type="text" name="title" placeholder="Book Title"/>
-    <input type="text" name="url" placeholder="Book URL"/>
-    <input type="text" name="author" placeholder="Book Author"/>
-    <div id='editor'></div>
+    <h2>Ongoing</h2>
+  </div>
+</div>
+<div class='row'>
+  <div class='small-12 medium-10 medium-offset-1 columns end summary-block'>
+    <div class='small-2 columns date-block'>
+      <p>11 Nov 2016</p>
+    </div>
+    <div class='small-10 columns'>
+      <h3><a href='/summary/1'>Superintelligence</a></h3>
+      <h5>By Nick Bostrom</h5>
+    </div>
+  </div>
+  <div class='small-12 medium-10 medium-offset-1 columns end summary-block'>
+    <div class='small-2 columns date-block'>
+      <p>20 Nov 2016</p>
+    </div>
+    <div class='small-10 columns'>
+      <h3><a href='/summary/2'>The Inner Game of Tennis</a></h3>
+      <h5>By Timothy Gallwey</h5>
+    </div>
+  </div>
+</div>
+<div class='row'>
+  <div class='small-12 medium-10 medium-offset-1 columns completed-heading'>
+    <h2>Completed</h2>
+  </div>
+</div>
+<div class='row'>
+  <div class='small-12 medium-10 medium-offset-1 columns end summary-block'>
+    <div class='small-2 columns date-block'>
+      <p>11 Nov 2016</p>
+    </div>
+    <div class='small-10 columns'>
+      <h3><a href='/summary/1'>The World Before Yesterday</a></h3>
+      <h5>By Jared Diamond</h5>
+    </div>
+  </div>
+  <div class='small-12 medium-10 medium-offset-1 columns end summary-block'>
+    <div class='small-2 columns date-block'>
+      <p>20 Nov 2016</p>
+    </div>
+    <div class='small-10 columns'>
+      <h3><a href='/summary/2'>World Order</a></h3>
+      <h5>By Henry Kissinger</h5>
+    </div>
+  </div>
+  <div class='small-12 columns'>
+    <br/>
+    <h2 class='text-center'><i class='fa fa-hand-spock-o'></i></h2>
   </div>
 </div>
