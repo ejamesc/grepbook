@@ -44,6 +44,13 @@ func (db *MockBookReviewDB) DeleteBookReview(uid string) error {
 	return nil
 }
 
+func (db *MockBookReviewDB) GetAllBookReviews() (grepbook.BookReviewArray, error) {
+	if db.shouldFail {
+		return nil, fmt.Errorf("some error")
+	}
+	return grepbook.BookReviewArray{bookReview1}, nil
+}
+
 func TestIndexHandler(t *testing.T) {
 	mockDB := &MockBookReviewDB{shouldFail: true}
 	indexHandler := app.IndexHandler(mockDB)

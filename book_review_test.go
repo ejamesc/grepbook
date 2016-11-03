@@ -1,6 +1,7 @@
 package grepbook_test
 
 import (
+	"sort"
 	"testing"
 	"time"
 
@@ -24,6 +25,7 @@ func TestCreateBookReview(t *testing.T) {
 	assert(t, !br.DateTimeCreated.Equal(time.Time{}), "expect book review date created to be non-zero")
 	assert(t, !br.DateTimeUpdated.Equal(time.Time{}), "expect book review date created to be non-zero")
 	assert(t, br.BookAuthor != "", "expect book author to be filled with string")
+	assert(t, br.IsOngoing, "expect IsOngoing to be true")
 	assert(t, br.HTML == "<p>Hello</p>", "expect HTML to be empty")
 	equals(t, 2, len(br.Chapters))
 }
@@ -64,4 +66,23 @@ func TestBookReviewSave(t *testing.T) {
 	ok(t, err)
 	equals(t, delta, br.HTML)
 	assert(t, br.DateTimeUpdated.After(originalTime), "expect DateTimeUpdated of book review to have been updated")
+}
+
+func TestBookReviewGetAll(t *testing.T) {
+	bra, err := testDB.GetAllBookReviews()
+	ok(t, err)
+	equals(t, 1, len(bra))
+}
+
+func TestBookReviewSort(t *testing.T) {
+	bra := grepbook.BookReviewArray{
+		&grepbook.BookReview{DateTimeCreated: time.Now()},
+		&grepbook.BookReview{DateTimeCreated: time.Now().Add(time.Hour)},
+		bookReview1}
+	sort.Sort(bra)
+	for i, _ := range bra {
+		if i+1 < len(bra) {
+			assert(t, bra[i].DateTimeCreated.Before(bra[i+1].DateTimeCreated), "expect DateTimeCreated to be ascending")
+		}
+	}
 }
