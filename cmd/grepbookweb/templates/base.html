@@ -18,7 +18,6 @@
     <meta charset="utf-8">
 
     <link href='/static/css/normalize.css' type='text/css' rel='stylesheet' />
-    <link href='/static/css/quill.snow.css' type='text/css' rel='stylesheet' />
     <link href='/static/css/foundation-6.2.4.min.css' type='text/css' rel='stylesheet' />
 
     <link href='/static/css/style.css' type='text/css' rel='stylesheet' />
@@ -28,9 +27,14 @@
     {{ if .User }}<form id='logout' role='form' action='/logout' method='post'></form>{{ end }}
     <header>
     <div class="row full-width">
-      <div class="small-12 columns">
-        <h3>grepbook</h3>
-        {{ if .User }}&middot; <a href="javascript:;" onclick='document.forms["logout"].submit()'>logout</a>{{ end }}
+      <div class="small-12 medium-10 medium-offset-1 columns">
+        <h1><a href='/'>grepbook</a></h1> &middot; <h3>book summaries by cedric chin</h3>
+        <nav class='header-actions'>
+        <ul>
+          <li><a href="/about">about</a></li>
+          {{ if .User }}<li><a href="javascript:;" onclick='document.forms["logout"].submit()'>logout</a></li>{{ end }}
+        </ul>
+        </nav>
       </div>
     </div>
     </header>
@@ -38,17 +42,14 @@
     {{ yield }}
 
     <hr/>
-    <footer class="row full-width">
-    <div class='medium-6 small-12 columns footer-left'>
+    <footer class="row">
+    <div class='small-12 medium-10 medium-offset-1 columns'>
       Book summaries for people who forget. This is an @ejames_c dig.
     </div>
     </footer>
   </body>
   <!--<script type="text/javascript" src="/static/js/vendor/mithril.min.js"></script>-->
-  <script type="text/javascript" src="/static/js/vendor/quill.min.js"></script>
-  <script type="text/javascript" src="/static/js/app.js"></script>
-  {{ if .User }}
-  {{ end }}
   {{ partial "scripts" }}
+  <script type="text/javascript" src="/static/js/app.js"></script>
 </html>
 

@@ -50,9 +50,50 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 
+h1, h2, h3, h4, h5 { font-family: 'Cormorant Garamond', 'Georgia', serif; }
+body { font-family: 'Proza Libre', Arial, sans-serif; }
+
+/* HEADER STYLES */
+header {
+  border-bottom: 1px solid #555;
+  background: #333;
+  font-size: 0.9rem;
+  color: #eee;
+  margin-bottom: 15px;
+}
+
+header h1 {
+  margin-top: 10px;
+  font-size: 1.6rem !important;
+  display: inline-block;
+}
+header h3 { 
+display: inline-block;
+font-size: 1rem !important;
+}
+
+.header-actions {
+  display: inline-block;
+  float: right;
+  padding-top: 15px;
+}
+
+header a { color: #eee; }
+header a:hover { color: #ddd; }
+
+
+nav.header-actions ul li {
+  display: inline;
+  margin-left: 15px;
+}
+
+/* EDITING STYLES */
 #editor {
   height: 450px;
 }
 
-h1, h2, h3, h4, h5 { font-family: 'Cormorant Garamond', 'Georgia', serif; }
-body { font-family: 'Proza Libre', Arial, sans-serif; }
+/* FOOTER */
+footer {
+  display: block;
+  margin-bottom: 20px;
+}

@@ -111,6 +111,7 @@ func main() {
 	common := alice.New(context.ClearHandler, a.loggingHandler, a.recoverHandler, a.userMiddlewareGenerator(db))
 
 	r.Get("/", common.Then(a.Wrap(a.IndexHandler(db))))
+	r.Get("/about", common.Then(a.Wrap(a.AboutHandler())))
 	r.Get("/login", common.Then(a.Wrap(a.LoginPageHandler())))
 	r.Post("/login", common.Then(a.Wrap(a.LoginPostHandler(db))))
 
