@@ -52,7 +52,7 @@ func (db *MockBookReviewDB) GetAllBookReviews() (grepbook.BookReviewArray, error
 }
 
 func TestIndexHandler(t *testing.T) {
-	mockDB := &MockBookReviewDB{shouldFail: true}
+	mockDB := &MockBookReviewDB{shouldFail: false}
 	indexHandler := app.IndexHandler(mockDB)
 	test := GenerateHandleTester(t, app.Wrap(indexHandler), false)
 	w := test("GET", url.Values{})

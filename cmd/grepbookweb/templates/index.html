@@ -5,6 +5,7 @@
     <script type="text/javascript" src="/static/js/app.js"></script>
 {{ end }}
 
+{{ if gt (len .Ongoing) 0 }}
 <div class='row'>
   <div class='small-12 medium-10 medium-offset-1 columns'>
     <h2>Ongoing</h2>
@@ -12,24 +13,18 @@
 </div>
 <div class='row'>
   <div class='small-12 medium-10 medium-offset-1 columns end summary-block'>
+    {{ range .Ongoing }}
     <div class='small-2 columns date-block'>
-      <p>11 Nov 2016</p>
+      <p>{{ .DateTimeCreated | datefmt }}</p>
     </div>
     <div class='small-10 columns'>
-      <h3><a href='/summaries/1'>Superintelligence</a></h3>
-      <h5>By Nick Bostrom</h5>
+      <h3><a href='/summaries/{{ .UID }}'>{{ .Title }}</a></h3>
+      <h5>By {{ .BookAuthor }}</h5>
     </div>
-  </div>
-  <div class='small-12 medium-10 medium-offset-1 columns end summary-block'>
-    <div class='small-2 columns date-block'>
-      <p>20 Nov 2016</p>
-    </div>
-    <div class='small-10 columns'>
-      <h3><a href='/summaries/2'>The Inner Game of Tennis</a></h3>
-      <h5>By Timothy Gallwey</h5>
-    </div>
+    {{ end }}
   </div>
 </div>
+{{ end }}
 <div class='row'>
   <div class='small-12 medium-10 medium-offset-1 columns completed-heading'>
     <h2>Completed</h2>
@@ -37,23 +32,20 @@
 </div>
 <div class='row'>
   <div class='small-12 medium-10 medium-offset-1 columns end summary-block'>
+    {{ range .Done }}
     <div class='small-2 columns date-block'>
-      <p>11 Nov 2016</p>
+      <p>{{ .DateTimeCreated | datefmt }}</p>
     </div>
     <div class='small-10 columns'>
-      <h3><a href='/summaries/1'>The World Before Yesterday</a></h3>
-      <h5>By Jared Diamond</h5>
+      <h3><a href='/summaries/{{ .UID }}'>{{ .Title }}</a></h3>
+      <h5>By {{ .BookAuthor }}</h5>
     </div>
+    {{ end }}
+    {{ if lt (len .Done) 1 }}
+      <p>Nothing here yet. Time to get reading!</p>
+    {{ end }}
   </div>
-  <div class='small-12 medium-10 medium-offset-1 columns end summary-block'>
-    <div class='small-2 columns date-block'>
-      <p>20 Nov 2016</p>
-    </div>
-    <div class='small-10 columns'>
-      <h3><a href='/summaries/2'>World Order</a></h3>
-      <h5>By Henry Kissinger</h5>
-    </div>
-  </div>
+
   <div class='small-12 columns'>
     <br/>
     <h4 class='text-center'><i class='fa fa-book'></i></h4>
