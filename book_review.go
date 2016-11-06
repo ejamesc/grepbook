@@ -41,7 +41,7 @@ type Chapter struct {
 
 // CreateChapter takes an input string of chapter headings separated by commas,
 // and returns a list of Chapters with headings
-func CreateChapter(input string) []*Chapter {
+func CreateChapters(input string) []*Chapter {
 	headings := strings.Split(input, ",")
 	if len(headings) < 1 {
 		return []*Chapter{}

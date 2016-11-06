@@ -44,7 +44,7 @@ func TestMain(m *testing.M) {
 	}
 
 	user1, _ = testDB.CreateUser("test@test.com", "test")
-	chapters := grepbook.CreateChapter("Introduction, Prelude, Conclusion")
+	chapters := grepbook.CreateChapters("Introduction, Prelude, Conclusion")
 	bookReview1, _ = testDB.CreateBookReview(
 		"The Inner Game of Tennis",
 		"W. Timothy Gallwey",

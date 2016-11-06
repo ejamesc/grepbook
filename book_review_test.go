@@ -9,7 +9,7 @@ import (
 )
 
 func TestCreateBookReview(t *testing.T) {
-	chapters := grepbook.CreateChapter("Introduction, Preface")
+	chapters := grepbook.CreateChapters("Introduction, Preface")
 	br, err := testDB.CreateBookReview(
 		"Superintelligence",
 		"Nick Bostrom",
@@ -37,7 +37,7 @@ func TestGetBookReview(t *testing.T) {
 }
 
 func TestDeleteBookReview(t *testing.T) {
-	chapters := grepbook.CreateChapter("Introduction, Preface")
+	chapters := grepbook.CreateChapters("Introduction, Preface")
 	br, err := testDB.CreateBookReview(
 		"Superintelligence",
 		"Nick Bostrom",

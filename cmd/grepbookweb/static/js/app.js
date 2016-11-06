@@ -56,6 +56,5 @@ var BookSummaryDetailsPopup = {
 
 m.mount(document.getElementById("modal-placeholder"), BookSummaryDetailsPopup);
 document.getElementById("new-review-button").onclick = function() {
-  console.log('yay');
   BookSummaryDetailsPopupViewModel.openPopup();
 };
