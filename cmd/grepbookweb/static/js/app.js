@@ -35,7 +35,7 @@ var BookSummaryDetailsPopup = {
                    m(".modal-header.small-12.columns", m("h2", "Enter book details:")),
                    m("form", {role: "form", action: "/summaries", method: "post"}, [
                      m(".medium-6.small-12.columns", [
-                       m("input", {type: "text", placeholder: "Name", name: "name"}),
+                       m("input", {type: "text", placeholder: "Title", name: "title"}),
                        m("input", {type: "text", placeholder: "Author", name: "author"}),
                        m("input", {type: "text", placeholder: "Amazon URL", name: "url"}),
                      ]),

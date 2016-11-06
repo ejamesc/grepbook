@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 	"strings"
 
@@ -23,11 +24,16 @@ func (a *App) ReadHandler(db grepbook.BookReviewDB) HandlerWithError {
 			return newError(500, "error retrieving book review:", err)
 		}
 
+		isNew := strings.TrimSpace(br.HTML) == ""
 		pp := struct {
 			BookReview *grepbook.BookReview
+			BRHTML     template.HTML
+			IsNew      bool
 			*localPresenter
 		}{
 			BookReview:     br,
+			BRHTML:         template.HTML(br.HTML),
+			IsNew:          isNew,
 			localPresenter: &localPresenter{PageTitle: "Summary template", PageURL: "/summary", globalPresenter: a.gp, User: user},
 		}
 
