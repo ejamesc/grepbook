@@ -48,7 +48,7 @@ func CreateChapter(input string) []*Chapter {
 	}
 	res := make([]*Chapter, len(headings))
 	for i, h := range headings {
-		res[i] = &Chapter{h}
+		res[i] = &Chapter{Heading: strings.TrimSpace(h)}
 	}
 	return res
 }

@@ -25,12 +25,14 @@
   </head>
   <body>
     {{ if .User }}<form id='logout' role='form' action='/logout' method='post'></form>{{ end }}
+    <div id='modal-placeholder'></div>
     <header>
     <div class="row full-width">
       <div class="small-12 medium-10 medium-offset-1 columns">
         <h1><a href='/'>grepbook</a></h1> &middot; <h3>book summaries by cedric chin</h3>
         <nav class='header-actions'>
         <ul>
+          {{ if .User }}<li><a id="new-review-button" href="javascript:void(0)">new</a></li>{{ end }}
           <li><a href="/about">about</a></li>
           {{ if .User }}<li><a href="javascript:;" onclick='document.forms["logout"].submit()'>logout</a></li>{{ end }}
         </ul>
@@ -48,8 +50,7 @@
     </div>
     </footer>
   </body>
-  <!--<script type="text/javascript" src="/static/js/vendor/mithril.min.js"></script>-->
+  <script type="text/javascript" src="/static/js/vendor/mithril.min.js"></script>
   {{ partial "scripts" }}
-  <script type="text/javascript" src="/static/js/app.js"></script>
 </html>
 

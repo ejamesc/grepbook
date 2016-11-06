@@ -52,6 +52,7 @@
 
 h1, h2, h3, h4, h5 { font-family: 'Cormorant Garamond', 'Georgia', serif; }
 body { font-family: 'Proza Libre', Arial, sans-serif; }
+.black-link { color: #333; }
 
 /* HEADER STYLES */
 header {
@@ -92,6 +93,10 @@ nav.header-actions ul li {
   height: 450px;
 }
 
+.submit-button {
+  margin-left: -15px;
+}
+
 /* INDEX PAGE */
 .date-block { 
   padding-top: 10px;
@@ -101,6 +106,7 @@ nav.header-actions ul li {
 }
 
 .summary-block {
+  padding-top: 15px;
   border-bottom: 1px solid #ddd;
 }
 
@@ -122,8 +128,68 @@ nav.header-actions ul li {
   border-radius: 5px;
 }
 
+.af-link {
+  background-color: #555;
+  color: #eee;
+  padding: 3px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+
+.af-link:hover {
+  color: #e1faea;
+}
+
 /* FOOTER */
 footer {
   display: block;
   margin-bottom: 20px;
+}
+
+/* MODAL */
+.modal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 99999;
+  -webkit-transition: opacity 400ms ease-in;
+  -moz-transition: opacity 400ms ease-in;
+  transition: opacity 400ms ease-in;
+  pointer-events: auto;
+}
+
+.modal-dialog:target {
+  pointer-events: auto;
+}
+
+.modal-dialog {
+  width: 90%;
+  position: relative;
+  margin: 10% auto;
+  padding: 5px 20px 13px 20px;
+  border-radius: 5px;
+  color: #eee;
+}
+
+.modal-white {
+  background-color: #fff;
+  color: #333;
+}
+
+.modal-dialog textarea.chapterbox {
+  height: 150px;
+}
+
+.modal-dialog a.close {
+  font-family: Helvetica, Arial, sans-serif !important;
+  font-size: 4rem;
+  color: #eee;
+  position: fixed;
+  top: 0;
+  right: 0;
+  margin-right: 30px;
 }

@@ -109,11 +109,13 @@ func main() {
 	a := SetupApp(r, logr, []byte(cookieSecretKey), templateFolderPath)
 
 	common := alice.New(context.ClearHandler, a.loggingHandler, a.recoverHandler, a.userMiddlewareGenerator(db))
+	auth := common.Append(a.authMiddleware)
 
 	r.Get("/", common.Then(a.Wrap(a.IndexHandler(db))))
 	r.Get("/about", common.Then(a.Wrap(a.AboutHandler())))
 
-	r.Get("/summary/:id", common.Then(a.Wrap(a.ReadHandler(db))))
+	r.Post("/summaries", auth.Then(a.Wrap(a.CreateBookReviewHandler(db))))
+	r.Get("/summaries/:id", common.Then(a.Wrap(a.ReadHandler(db))))
 
 	r.Get("/login", common.Then(a.Wrap(a.LoginPageHandler())))
 	r.Post("/login", common.Then(a.Wrap(a.LoginPostHandler(db))))

@@ -1,18 +1,20 @@
 {{ define "header-read" }}
+    <link rel="stylesheet" href="/static/css/vendor/css/font-awesome.min.css">
   {{ if .User }}
     <link href='/static/css/quill.snow.css' type='text/css' rel='stylesheet' />
     {{ end }}
 {{ end }}
 {{ define "scripts-read" }}
   {{ if .User }}
-  <script type="text/javascript" src="/static/js/vendor/quill.min.js"></script>
+    <script type="text/javascript" src="/static/js/vendor/quill.min.js"></script>
+    <script type="text/javascript" src="/static/js/app.js"></script>
   {{ end }}
 {{ end }}
 
 <div class='row'>
   <div class='small-12 medium-10 medium-offset-1 columns'>
     <h2>Superintelligence</h2>
-    <h5 class='summary-subheader'>by Nick Bostrom &middot; 15 July 2016 &middot; <a href='https://www.amazon.com/Superintelligence-Dangers-Strategies-Nick-Bostrom/dp/1501227742'>Buy from Amazon</a></h5>
+    <h5 class='summary-subheader'>by Nick Bostrom &middot; 15 July 2016 &middot; <a href='https://www.amazon.com/Superintelligence-Dangers-Strategies-Nick-Bostrom/dp/1501227742'>Buy from Amazon</a> {{ if .User }}&middot; <a class='black-link' href="#"><i class='fa fa-pencil'></i></a>{{ end }}</h5>
     <span class='label success summary-ongoing'>Ongoing</span>
     <hr/>
     <div {{ if .User }}id='editor' {{ end }}>
@@ -24,5 +26,27 @@
 
       <p>Phasellus sit amet lectus at enim sagittis feugiat vitae vel mi. Nulla at diam efficitur, euismod nibh at, molestie nibh. Nam sit amet nibh tellus. Duis dui orci, ullamcorper vitae suscipit sed, aliquam nec justo. Praesent a nunc ut justo auctor feugiat. Donec tristique libero at felis condimentum, in accumsan tellus lobortis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut eu laoreet velit.</p>
     </div>
+    {{ if .User }}
+    <div class='small-12 medium-6 columns'>
+    <br/>
+    <input class='button success submit-button' type="submit" value="Save" />    
+  </div>
+    <div class='small-12 medium-6 columns text-right'>
+      <label><em>Ongoing?</em></label>
+      <div class="switch">
+        <input class="switch-input" id="yes-no" type="checkbox" name="exampleSwitch" checked>
+        <label class="switch-paddle" for="yes-no">
+          <span class="show-for-sr">Ongoing?</span>
+          <span class="switch-active" aria-hidden="true">Yes</span>
+          <span class="switch-inactive" aria-hidden="true">No</span>
+        </label>
+      </div>
+    </div>
+    {{ else }}
+    <br/>
+    <h4 class='text-center'><i class='fa fa-book'></i></h4>
+    <br/>
+    <p><a class='af-link' href='#'><i class='fa fa-inverse fa-amazon'></i> Buy from Amazon (affiliate) &rarr;</a>
+    {{ end }} 
   </div>
 </div>

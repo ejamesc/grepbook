@@ -42,6 +42,27 @@ func (a *App) ReadHandler(db grepbook.BookReviewDB) HandlerWithError {
 		return nil
 	}
 }
+
+func (a *App) CreateBookReviewHandler(db grepbook.BookReviewDB) HandlerWithError {
+	return func(w http.ResponseWriter, req *http.Request) error {
+		return nil
+	}
+}
+
+func (a *App) UpdateBookReviewHandler(db grepbook.BookReviewDB) HandlerWithError {
+	return func(w http.ResponseWriter, req *http.Request) error {
+		return nil
+	}
+}
+
+func (a *App) DeleteBookReviewHandler(db grepbook.BookReviewDB) HandlerWithError {
+	return func(w http.ResponseWriter, req *http.Request) error {
+		return nil
+	}
+}
+
+func (a *App) BookIndexHandler(db grepbook.BookReviewDB) HandlerWithError {
+	return func(w http.ResponseWriter, req *http.Request) error {
 		return nil
 	}
 }
