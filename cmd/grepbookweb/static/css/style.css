@@ -51,7 +51,7 @@
 }
 
 h1, h2, h3, h4, h5 { font-family: 'Cormorant Garamond', 'Georgia', serif; }
-body { font-family: 'Proza Libre', Arial, sans-serif; }
+body { font: 1.05rem 'Proza Libre', Arial, sans-serif; }
 .black-link { color: #333; }
 
 /* HEADER STYLES */

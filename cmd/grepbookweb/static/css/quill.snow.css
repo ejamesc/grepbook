@@ -23,6 +23,7 @@
 .ql-editor {
   box-sizing: border-box;
   cursor: text;
+  font-size: 1.05rem;
   line-height: 1.42;
   height: 100%;
   outline: none;
@@ -498,27 +499,6 @@
 }
 .ql-snow .ql-direction.ql-active svg:first-child {
   display: none;
-}
-.ql-snow .ql-editor h1 {
-  font-size: 2em;
-}
-.ql-snow .ql-editor h2 {
-  font-size: 1.5em;
-}
-.ql-snow .ql-editor h3 {
-  font-size: 1.17em;
-}
-.ql-snow .ql-editor h4 {
-  font-size: 1em;
-}
-.ql-snow .ql-editor h5 {
-  font-size: 0.83em;
-}
-.ql-snow .ql-editor h6 {
-  font-size: 0.67em;
-}
-.ql-snow .ql-editor a {
-  text-decoration: underline;
 }
 .ql-snow .ql-editor blockquote {
   border-left: 4px solid #ccc;
