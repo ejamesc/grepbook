@@ -24,11 +24,15 @@
         <h2>{{ .Heading }}</h2>
         {{ end }}
       {{ end }}
+      {{ if not .IsNew }}
+        {{ .BRHTML }}
+      {{ end }}
     </div>
     {{ if .User }}
     <div class='small-12 medium-6 columns'>
     <br/>
     <input class='button success submit-button' type="submit" value="Save" />    
+    <button class='button alert'>Delete</button>
   </div>
     <div class='small-12 medium-6 columns text-right'>
       <label><em>Ongoing?</em></label>
@@ -49,3 +53,4 @@
     {{ end }} 
   </div>
 </div>
+<div id='data-bookreview' data-bookreviewjson='{{ .BRJSON }}'></div>

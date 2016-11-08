@@ -1,10 +1,3 @@
-if (typeof Quill !== 'undefined') {
-  var quill = new Quill('#editor', {
-    placeholder: 'Start your summary ...',
-    theme: 'snow'
-  });
-}
-
 var BookSummaryDetailsPopupViewModel = (function() {
   var vm = {};
   vm.isShowPopup = m.prop(false);

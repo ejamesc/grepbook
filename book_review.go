@@ -137,9 +137,10 @@ type BookReviewDB interface {
 	GetBookReview(uid string) (*BookReview, error)
 	DeleteBookReview(uid string) error
 	GetAllBookReviews() (BookReviewArray, error)
+	Update(func(tx *bolt.Tx) error) error
 }
 
-func (br *BookReview) Save(db *DB) error {
+func (br *BookReview) Save(db BookReviewDB) error {
 	if br.UID == "" {
 		br.UID = shortuuid.New()
 	} else {

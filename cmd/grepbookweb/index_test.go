@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/boltdb/bolt"
 	"github.com/ejamesc/grepbook"
 )
 
@@ -14,6 +15,7 @@ type MockBookReviewDB struct {
 }
 
 func (db *MockBookReviewDB) CreateBookReview(title, author, bookURL, html, delta string, chapters []*grepbook.Chapter) (*grepbook.BookReview, error) {
+
 	if db.shouldFail {
 		return nil, fmt.Errorf("some error")
 	}
@@ -49,6 +51,13 @@ func (db *MockBookReviewDB) GetAllBookReviews() (grepbook.BookReviewArray, error
 		return nil, fmt.Errorf("some error")
 	}
 	return grepbook.BookReviewArray{bookReview1}, nil
+}
+
+func (db *MockBookReviewDB) Update(func(tx *bolt.Tx) error) error {
+	if db.shouldFail {
+		return fmt.Errorf("some error")
+	}
+	return nil
 }
 
 func TestIndexHandler(t *testing.T) {
