@@ -24,7 +24,7 @@ import (
 var bookReview1 = &grepbook.BookReview{
 	Title:           "War and Peace",
 	BookAuthor:      "Leo Tolstoy",
-	HTML:            "<p>Great book!</p>",
+	OverviewHTML:    "<p>Great book!</p>",
 	BookURL:         "https://www.amazon.com/Superintelligence-Dangers-Strategies-Nick-Bostrom/dp/1501227742",
 	Delta:           "{}",
 	DateTimeCreated: time.Now().UTC(),

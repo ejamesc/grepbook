@@ -23,7 +23,7 @@ func (db *MockBookReviewDB) CreateBookReview(title, author, bookURL, html, delta
 	return &grepbook.BookReview{
 		Title:           title,
 		BookAuthor:      author,
-		HTML:            html,
+		OverviewHTML:    html,
 		BookURL:         bookURL,
 		Delta:           delta,
 		DateTimeCreated: now,

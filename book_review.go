@@ -15,12 +15,12 @@ type BookReview struct {
 	UID             string     `json:"uid"`
 	Title           string     `json:"title"`
 	BookAuthor      string     `json:"book_author"`
-	BookURL         string     `json:"slug"`
-	HTML            string     `json:"html"`
+	BookURL         string     `json:"book_url"`
+	OverviewHTML    string     `json:"html"`
 	Delta           string     `json:"delta"`
 	DateTimeCreated time.Time  `json:"date_created"`
 	DateTimeUpdated time.Time  `json:"date_updated"`
-	IsOngoing       bool       `json:is_ongoing`
+	IsOngoing       bool       `json:"is_ongoing"`
 	Chapters        []*Chapter `json:"chapters"`
 }
 
@@ -59,7 +59,7 @@ func (db *DB) CreateBookReview(title, author, bookURL, html, delta string, chapt
 		Title:           title,
 		BookAuthor:      author,
 		BookURL:         bookURL,
-		HTML:            html,
+		OverviewHTML:    html,
 		Delta:           delta,
 		DateTimeCreated: now,
 		DateTimeUpdated: now,

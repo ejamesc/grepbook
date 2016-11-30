@@ -1,8 +1,8 @@
 {{ define "header-read" }}
-    <link rel="stylesheet" href="/static/css/vendor/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/static/css/vendor/css/font-awesome.min.css">
   {{ if .User }}
     <link href='/static/css/quill.snow.css' type='text/css' rel='stylesheet' />
-    {{ end }}
+  {{ end }}
 {{ end }}
 {{ define "scripts-read" }}
   {{ if .User }}
@@ -18,39 +18,51 @@
     <h5 class='summary-subheader'>by {{ .BookReview.BookAuthor }} &middot; {{ .BookReview.DateTimeCreated | datefmt }} &middot; <a href='{{ .BookReview.BookURL }}'>Buy from Amazon</a> {{ if .User }}&middot; <a class='black-link' id='edit-review-button' href="javascript:void(0)"><i class='fa fa-pencil'></i></a>{{ end }}</h5>
     {{ if .BookReview.IsOngoing }}<span class='label success summary-ongoing'>Ongoing</span>{{ end }}
     <hr/>
-    <div {{ if .User }}id='editor'{{ end }}>
-      {{ if and .User .IsNew }}
-        {{ range .BookReview.Chapters }}
-        <h2>{{ .Heading }}</h2>
-        {{ end }}
+  </div>
+</div>
+<div class='row'>
+  <div class='small-12 {{ if .User }}medium-10 medium-offset-1{{ else }}medium-8 medium-offset-2{{ end }} columns'>
+    {{ if .User }}<div id='editor'>{{ end }}
+    {{ if and .User .IsNew }}
+      {{ range .BookReview.Chapters }}
+      <h2>{{ .Heading }}</h2>
       {{ end }}
-      {{ if not .IsNew }}
-        {{ .BRHTML }}
-      {{ end }}
-    </div>
-    {{ if .User }}
-    <div class='small-12 medium-6 columns'>
+    {{ end }}
+    {{ if not .IsNew }}
+      {{ .BRHTML }}
+    {{ end }}
+    {{ if .User }}</div>{{ end }}
+  </div>
+</div>
+{{ if .User }}
+<div class='row'>
+  <div class='small-12 medium-10 medium-offset-1 end columns'>
     <br/>
     <input class='button success submit-button' type="submit" value="Save" />    
     <button class='button alert'>Delete</button>
   </div>
-    <div class='small-12 medium-6 columns text-right'>
-      <label><em>Ongoing?</em></label>
-      <div class="switch">
-        <input class="switch-input" id="yes-no" type="checkbox" name="exampleSwitch" {{ if .BookReview.IsOngoing }}checked{{ end }}>
-        <label class="switch-paddle" for="yes-no">
-          <span class="show-for-sr">Ongoing?</span>
-          <span class="switch-active" aria-hidden="true">Yes</span>
-          <span class="switch-inactive" aria-hidden="true">No</span>
-        </label>
-      </div>
+</div>
+<div class='row'>
+  <div class='small-12 medium-10 medium-offset-1 columns text-right'>
+    <label><em>Ongoing?</em></label>
+    <div class="switch">
+      <input class="switch-input" id="yes-no" type="checkbox" name="exampleSwitch" {{ if .BookReview.IsOngoing }}checked{{ end }}>
+      <label class="switch-paddle" for="yes-no">
+        <span class="show-for-sr">Ongoing?</span>
+        <span class="switch-active" aria-hidden="true">Yes</span>
+        <span class="switch-inactive" aria-hidden="true">No</span>
+      </label>
     </div>
-    {{ else }}
+  </div>
+</div>
+{{ else }}
+<div class='row'>
+  <div class='small-12 medium-8 medium-offset-2 columns'>
     <br/>
     <h4 class='text-center'><i class='fa fa-book'></i></h4>
     <br/>
     <p><a class='af-link' href='{{ .BookReview.BookURL }}'><i class='fa fa-inverse fa-amazon'></i> Buy from Amazon (affiliate) &rarr;</a>
-    {{ end }} 
   </div>
+  {{ end }} 
 </div>
 <div id='data-bookreview' data-bookreviewjson='{{ .BRJSON }}'></div>

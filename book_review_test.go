@@ -26,7 +26,7 @@ func TestCreateBookReview(t *testing.T) {
 	assert(t, !br.DateTimeUpdated.Equal(time.Time{}), "expect book review date created to be non-zero")
 	assert(t, br.BookAuthor != "", "expect book author to be filled with string")
 	assert(t, br.IsOngoing, "expect IsOngoing to be true")
-	assert(t, br.HTML == "<p>Hello</p>", "expect HTML to be empty")
+	assert(t, br.OverviewHTML == "<p>Hello</p>", "expect HTML to be empty")
 	equals(t, 2, len(br.Chapters))
 }
 
@@ -58,13 +58,13 @@ func TestBookReviewSave(t *testing.T) {
 	delta := "<p>Stupid siaaaa</p>"
 	originalTime := bookReview1.DateTimeUpdated
 
-	bookReview1.HTML = delta
+	bookReview1.OverviewHTML = delta
 	err := bookReview1.Save(testDB)
 	ok(t, err)
 
 	br, err := testDB.GetBookReview(bookReview1.UID)
 	ok(t, err)
-	equals(t, delta, br.HTML)
+	equals(t, delta, br.OverviewHTML)
 	assert(t, br.DateTimeUpdated.After(originalTime), "expect DateTimeUpdated of book review to have been updated")
 }
 

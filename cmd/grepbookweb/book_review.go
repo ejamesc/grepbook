@@ -27,7 +27,7 @@ func (a *App) ReadHandler(db grepbook.BookReviewDB) HandlerWithError {
 			return newError(500, "error retrieving book review:", err)
 		}
 
-		isNew := strings.TrimSpace(br.HTML) == ""
+		isNew := strings.TrimSpace(br.OverviewHTML) == ""
 		pp := struct {
 			BookReview *grepbook.BookReview
 			BRHTML     template.HTML
@@ -36,7 +36,7 @@ func (a *App) ReadHandler(db grepbook.BookReviewDB) HandlerWithError {
 			*localPresenter
 		}{
 			BookReview:     br,
-			BRHTML:         template.HTML(br.HTML),
+			BRHTML:         template.HTML(br.OverviewHTML),
 			IsNew:          isNew,
 			localPresenter: &localPresenter{PageTitle: "Summary template", PageURL: "/summary", globalPresenter: a.gp, User: user},
 		}
@@ -83,21 +83,21 @@ func (a *App) UpdateBookReviewHandler(db grepbook.BookReviewDB) HandlerWithError
 			if err == grepbook.ErrNoRows {
 				return newError(http.StatusNotFound, "no book review with that uid found", err)
 			}
-			return newError(500, "error retrieving book review:", err)
+			return newError(http.StatusInternalServerError, "error retrieving book review:", err)
 		}
 
 		var tbr *grepbook.BookReview
 		jsonBody, err := ioutil.ReadAll(req.Body)
 		if err != nil {
-			return newError(500, "error reading request body", err)
+			return newError(http.StatusInternalServerError, "error reading request body", err)
 		}
 		err = json.Unmarshal(jsonBody, &tbr)
 		if err != nil {
-			return newError(500, "error unmarshalling jsonBody from update", err)
+			return newError(http.StatusInternalServerError, "error unmarshalling jsonBody from update", err)
 		}
 
 		if tbr.UID != br.UID {
-			return newError(403, "user does not own book review", err)
+			return newError(http.StatusForbidden, "user does not own book review", err)
 		}
 
 		saveBR(br, tbr)
@@ -123,8 +123,8 @@ func saveBR(oldBR, newBR *grepbook.BookReview) {
 	if newBR.BookURL != "" || newBR.BookURL != oldBR.BookURL {
 		oldBR.BookURL = newBR.BookURL
 	}
-	if newBR.HTML != "" || newBR.HTML != oldBR.HTML {
-		oldBR.HTML = newBR.HTML
+	if newBR.OverviewHTML != "" || newBR.OverviewHTML != oldBR.OverviewHTML {
+		oldBR.OverviewHTML = newBR.OverviewHTML
 	}
 	if newBR.Delta != "" || newBR.Delta != oldBR.Delta {
 		oldBR.Delta = newBR.Delta
