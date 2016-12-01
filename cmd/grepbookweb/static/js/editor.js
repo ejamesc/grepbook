@@ -4,11 +4,8 @@ var quill = new Quill('#editor', {
   theme: 'snow'
 });
 
-var BookReviewModel = (function() {
-  var brJSON = document.querySelector('#data-bookreview').dataset.bookreviewjson;
-  var br = JSON.parse(brJSON);
-  return br;
-})();
+var brJSON = document.querySelector('#data-bookreview').dataset.bookreviewjson;
+var brm = BookSummaryModel(brJSON);
 
 var change = new Delta();
 quill.on('text-change', function(delta, source) {
@@ -16,16 +13,10 @@ quill.on('text-change', function(delta, source) {
 });
 
 var saveText = function() {
-  BookReviewModel.html = document.querySelector(".ql-editor").innerHTML;
-  BookReviewModel.delta = JSON.stringify(quill.getContents());
-  var data = BookReviewModel;
-  m.request({
-    method: 'PUT',
-    url: '/summaries/' + BookReviewModel.uid,
-    data: data,
-  }).then(function(response){
-      console.log(response);
-    });
+  var blah = document.querySelector(".ql-editor").innerHTML;
+  brm.overviewHTML(document.querySelector(".ql-editor").innerHTML);
+  brm.delta(JSON.stringify(quill.getContents()));
+  brm.save();
 };
 
 setInterval(function() {
@@ -43,7 +34,6 @@ window.onbeforeunload = function() {
   }
 };
 
-
 document.getElementById("edit-review-button").onclick = function() {
-  BookSummaryDetailsPopupViewModel.openPopup();
+  BookSummaryDetailsPopupViewModel.openPopup(brm);
 };
