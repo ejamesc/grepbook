@@ -13,7 +13,6 @@ quill.on('text-change', function(delta, source) {
 });
 
 var saveText = function() {
-  var blah = document.querySelector(".ql-editor").innerHTML;
   brm.overviewHTML(document.querySelector(".ql-editor").innerHTML);
   brm.delta(JSON.stringify(quill.getContents()));
   brm.save();
@@ -21,7 +20,6 @@ var saveText = function() {
 
 setInterval(function() {
   if (change.length() > 0) {
-
     // do the save
     change = new Delta();
     saveText();
@@ -36,4 +34,13 @@ window.onbeforeunload = function() {
 
 document.getElementById("edit-review-button").onclick = function() {
   BookSummaryDetailsPopupViewModel.openPopup(brm);
+};
+
+document.getElementById("save-button").onclick = function() {
+  brm.overviewHTML(document.querySelector(".ql-editor").innerHTML);
+  brm.delta(JSON.stringify(quill.getContents()));
+  change = new Delta();
+  brm.saver().then(function(r) {
+    window.location = "/";
+  });
 };

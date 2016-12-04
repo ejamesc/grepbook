@@ -26,15 +26,21 @@ var BookSummaryModel = function(json) {
     };
   };
 
-  brm.save = function() {
-    m.request({
+  var _saver = function() {
+    return m.request({
       method: 'PUT',
       url: '/summaries/' + brm.uid(),
       data: brm._json(),
-    }).then(function(response){
+    });
+  };
+
+  brm.save = function() {
+    _saver().then(function(response) {
       console.log(response);
     });
   };
+
+  brm.saver = _saver;
 
   brm.chapterList = function() {
     var res = ""; var chapters = brm.chapters();
