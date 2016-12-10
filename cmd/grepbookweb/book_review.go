@@ -100,7 +100,7 @@ func (a *App) UpdateBookReviewHandler(db grepbook.BookReviewDB) HandlerWithError
 			return newError(http.StatusForbidden, "user does not own book review", err)
 		}
 
-		saveBR(br, tbr)
+		mergeBookReviewDeltas(br, tbr)
 		br.DateTimeUpdated = time.Now()
 		br.Save(db)
 		return nil
@@ -113,7 +113,7 @@ func (a *App) DeleteBookReviewHandler(db grepbook.BookReviewDB) HandlerWithError
 	}
 }
 
-func saveBR(oldBR, newBR *grepbook.BookReview) {
+func mergeBookReviewDeltas(oldBR, newBR *grepbook.BookReview) {
 	if newBR.Title != "" || newBR.Title != oldBR.Title {
 		oldBR.Title = newBR.Title
 	}

@@ -58,10 +58,10 @@ var BookSummaryDetailsPopupViewModel = (function() {
   var vm = {};
   vm.isShowPopup = m.prop(false);
   vm._bookSummaryModel = {};
+  vm.isCreateMode = m.prop(true);
 
   vm.openPopup = function(bookSummaryModel) {
     vm._bookSummaryModel = bookSummaryModel || BookSummaryModel();
-    vm.isCreateMode = m.prop(true);
     if (bookSummaryModel) {
       vm.isCreateMode = m.prop(false);
     }
@@ -79,6 +79,11 @@ var BookSummaryDetailsPopupViewModel = (function() {
   vm.save = function() {
     vm._bookSummaryModel.save();
     vm.closePopup();
+    if (!vm.isCreateMode()) {
+      setTimeout(function() {
+        window.location.reload(true);
+      }, 100);
+    }
   };
   return vm;
 })();

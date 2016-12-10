@@ -14,12 +14,14 @@
 <div class='row'>
   <div class='small-12 medium-10 medium-offset-1 columns end summary-block'>
     {{ range .Ongoing }}
-    <div class='small-2 columns date-block'>
-      <p>{{ .DateTimeCreated | datefmt }}</p>
-    </div>
-    <div class='small-10 columns'>
-      <h3><a href='/summaries/{{ .UID }}'>{{ .Title }}</a></h3>
-      <h5>By {{ .BookAuthor }}</h5>
+    <div class='row'>
+      <div class='small-2 columns date-block'>
+        <p>{{ .DateTimeCreated | datefmt }}</p>
+      </div>
+      <div class='small-10 columns'>
+        <h3><a href='/summaries/{{ .UID }}'>{{ .Title }}</a></h3>
+        <h5>{{ if .BookAuthor }}By {{ .BookAuthor }}{{ end }}</h5>
+      </div>
     </div>
     {{ end }}
   </div>
@@ -33,12 +35,14 @@
 <div class='row'>
   <div class='small-12 medium-10 medium-offset-1 columns end summary-block'>
     {{ range .Done }}
-    <div class='small-2 columns date-block'>
-      <p>{{ .DateTimeCreated | datefmt }}</p>
-    </div>
-    <div class='small-10 columns'>
-      <h3><a href='/summaries/{{ .UID }}'>{{ .Title }}</a></h3>
-      <h5>By {{ .BookAuthor }}</h5>
+    <div class='row'>
+      <div class='small-2 columns date-block'>
+        <p>{{ .DateTimeCreated | datefmt }}</p>
+      </div>
+      <div class='small-10 columns'>
+        <h3><a href='/summaries/{{ .UID }}'>{{ .Title }}</a></h3>
+        <h5>{{ if .BookAuthor }}By {{ .BookAuthor }}{{ end }}</h5>
+      </div>
     </div>
     {{ end }}
     {{ if lt (len .Done) 1 }}

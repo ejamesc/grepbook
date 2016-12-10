@@ -46,3 +46,10 @@ func TestCreateBookReviewHandler(t *testing.T) {
 	w = test("POST", url.Values{})
 	assert(t, w.Code == http.StatusBadRequest, "expected create book review to return 400 bad request error on empty title field, instead got %d", w.Code)
 }
+
+func TestUpdateBookReviewHandler(t *testing.T) {
+	//mockDB := &MockBookReviewDB{shouldFail: false}
+	//updateBookHandler := app.UpdateBookReviewHandler(mockDB)
+	//test := GenerateHandleTester(t, app.Wrap(updateBookHandler), true)
+	//w := test("PUT", url.Values{""})
+}
