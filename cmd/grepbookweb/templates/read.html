@@ -39,15 +39,15 @@
   <div class='small-12 medium-10 medium-offset-1 end columns'>
     <br/>
     <input class='button success' type="submit" value="Save" id="save-button"/>    
-    <button class='button alert'>Delete</button>
+    <button class='button alert' id="delete-button">Delete</button>
   </div>
 </div>
 <div class='row'>
   <div class='small-12 medium-10 medium-offset-1 columns text-right'>
     <label><em>Ongoing?</em></label>
     <div class="switch">
-      <input class="switch-input" id="yes-no" type="checkbox" name="exampleSwitch" {{ if .BookReview.IsOngoing }}checked{{ end }}>
-      <label class="switch-paddle" for="yes-no">
+      <input class="switch-input" id="ongoing-switch" type="checkbox" name="isOngoing" {{ if .BookReview.IsOngoing }}checked{{ end }}>
+      <label class="switch-paddle" for="ongoing-switch">
         <span class="show-for-sr">Ongoing?</span>
         <span class="switch-active" aria-hidden="true">Yes</span>
         <span class="switch-inactive" aria-hidden="true">No</span>

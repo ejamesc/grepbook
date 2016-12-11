@@ -41,11 +41,9 @@ func TestCreateBookReviewHandler(t *testing.T) {
 	assert(t, w.Code == http.StatusBadRequest, "expected create book review to return 400 bad request error on empty title field, instead got %d", w.Code)
 }
 
+// Not going to write this test until after the shift has been done.
 func TestUpdateBookReviewHandler(t *testing.T) {
-	//mockDB := &MockBookReviewDB{shouldFail: false}
-	//updateBookHandler := app.UpdateBookReviewHandler(mockDB)
-	//test := GenerateHandleTester(t, app.Wrap(updateBookHandler), true)
-	//w := test("PUT", url.Values{""})
+
 }
 
 func TestDeleteBookReviewHandler(t *testing.T) {
@@ -55,5 +53,9 @@ func TestDeleteBookReviewHandler(t *testing.T) {
 	test := GenerateHandleTesterWithURLParams(t, deleteBookHandler, true, params)
 	w := test("DELETE", url.Values{})
 
-	assert(t, w.Code == http.StatusOK, "expected delete book review to return 200 on success")
+	assert(t, w.Code == http.StatusOK, "expected delete book review to return 200 on success, instead got %d", w.Code)
+
+	test = GenerateHandleTesterWithURLParams(t, deleteBookHandler, true, httprouter.Params{})
+	w = test("DELETE", url.Values{})
+	assert(t, w.Code == http.StatusNotFound, "expected delete book review to return 404 when no matching uid provided, instead got %d", w.Code)
 }

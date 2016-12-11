@@ -33,6 +33,7 @@ var BookSummaryModel = function(json) {
       data: brm._json(),
     });
   };
+  brm.saver = _saver;
 
   brm.save = function() {
     _saver().then(function(response) {
@@ -40,7 +41,13 @@ var BookSummaryModel = function(json) {
     });
   };
 
-  brm.saver = _saver;
+  var _deleter = function() {
+    return m.request({
+      method: 'DELETE',
+      url: '/summaries/' + brm.uid(),
+    });
+  };
+  brm.deleter = _deleter;
 
   brm.chapterList = function() {
     var res = ""; var chapters = brm.chapters();

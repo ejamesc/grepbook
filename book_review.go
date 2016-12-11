@@ -36,7 +36,10 @@ func (bra BookReviewArray) Less(i, j int) bool {
 }
 
 type Chapter struct {
+	ID      string `json:"id"`
 	Heading string `json:"heading"`
+	HTML    string `json:"html"`
+	Delta   string `json:"delta"`
 }
 
 // CreateChapter takes an input string of chapter headings separated by commas,
@@ -48,7 +51,7 @@ func CreateChapters(input string) []*Chapter {
 	}
 	res := make([]*Chapter, len(headings))
 	for i, h := range headings {
-		res[i] = &Chapter{Heading: strings.TrimSpace(h)}
+		res[i] = &Chapter{ID: shortuuid.New(), Heading: strings.TrimSpace(h)}
 	}
 	return res
 }

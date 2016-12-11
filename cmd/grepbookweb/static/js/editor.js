@@ -44,3 +44,16 @@ document.getElementById("save-button").onclick = function() {
     window.location = "/";
   });
 };
+
+document.getElementById("delete-button").onclick = function() {
+  if (confirm("Are you sure you want to delete this review?")) {
+    brm.deleter().then(function(r) {
+      window.location = "/";
+    });
+  }
+};
+
+document.getElementById("ongoing-switch").onclick = function() {
+  brm.isOngoing(this.checked);
+  brm.save();
+};
