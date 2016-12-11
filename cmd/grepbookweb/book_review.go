@@ -83,7 +83,7 @@ func (a *App) UpdateBookReviewHandler(db grepbook.BookReviewDB) HandlerWithError
 			if err == grepbook.ErrNoRows {
 				return newError(http.StatusNotFound, "no book review with that uid found", err)
 			}
-			return newError(http.StatusInternalServerError, "error retrieving book review:", err)
+			return newError(http.StatusInternalServerError, "error retrieving book review: ", err)
 		}
 
 		var tbr *grepbook.BookReview
@@ -103,12 +103,32 @@ func (a *App) UpdateBookReviewHandler(db grepbook.BookReviewDB) HandlerWithError
 		mergeBookReviewDeltas(br, tbr)
 		br.DateTimeUpdated = time.Now()
 		br.Save(db)
+
+		apiResp := &APIResponse{Message: "Book review updated successfully"}
+		a.rndr.JSON(w, http.StatusOK, apiResp)
 		return nil
 	}
 }
 
 func (a *App) DeleteBookReviewHandler(db grepbook.BookReviewDB) HandlerWithError {
 	return func(w http.ResponseWriter, req *http.Request) error {
+		params := GetParamsObj(req)
+		uid := params.ByName("id")
+		br, err := db.GetBookReview(uid)
+		if err != nil {
+			if err == grepbook.ErrNoRows {
+				return newError(http.StatusNotFound, "no book review with that uid found", err)
+			}
+			return newError(http.StatusInternalServerError, "error retrieving book review: ", err)
+		}
+
+		err = db.DeleteBookReview(br.UID)
+		if err != nil {
+			return newError(http.StatusInternalServerError, "error deleting book review: ", err)
+		}
+		apiResp := &APIResponse{Message: "Book review deleted successfully"}
+		a.rndr.JSON(w, http.StatusOK, apiResp)
+
 		return nil
 	}
 }

@@ -21,6 +21,7 @@ func (db *MockBookReviewDB) CreateBookReview(title, author, bookURL, html, delta
 	}
 	now := grepbook.TimeNow()
 	return &grepbook.BookReview{
+		UID:             "giEa2JTKrWEbTy2nb3U5wc",
 		Title:           title,
 		BookAuthor:      author,
 		OverviewHTML:    html,
@@ -36,12 +37,18 @@ func (db *MockBookReviewDB) GetBookReview(uid string) (*grepbook.BookReview, err
 	if db.shouldFail {
 		return nil, fmt.Errorf("some error")
 	}
+	if uid == "" {
+		return nil, grepbook.ErrNoRows
+	}
 	return bookReview1, nil
 }
 
 func (db *MockBookReviewDB) DeleteBookReview(uid string) error {
 	if db.shouldFail {
 		return fmt.Errorf("some error")
+	}
+	if uid == "" {
+		return grepbook.ErrNoRows
 	}
 	return nil
 }

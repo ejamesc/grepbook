@@ -41,6 +41,14 @@ func (a *App) getFlashes(w http.ResponseWriter, req *http.Request) []interface{}
 
 // GetParamsObj returns a httprouter params object given the request.
 func GetParamsObj(req *http.Request) httprouter.Params {
-	ps := context.Get(req, Params).(httprouter.Params)
+	ps, ok := context.Get(req, Params).(httprouter.Params)
+	if !ok {
+		return httprouter.Params{}
+	}
 	return ps
+}
+
+// APIResponse is a struct that is returned during API responses
+type APIResponse struct {
+	Message string `json:"message"`
 }

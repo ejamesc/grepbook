@@ -2,31 +2,25 @@ package main_test
 
 import (
 	"net/http"
-	"net/http/httptest"
 	"net/url"
 	"strings"
 	"testing"
 
-	"github.com/ejamesc/grepbook/cmd/grepbookweb"
-	"github.com/gorilla/context"
 	"github.com/julienschmidt/httprouter"
 )
 
 func TestReadHandler(t *testing.T) {
 	mockDB := &MockBookReviewDB{shouldFail: false}
 	rh := app.Wrap(app.ReadHandler(mockDB))
-	req, err := http.NewRequest("GET", "", nil)
-	ok(t, err)
-	w := httptest.NewRecorder()
+	params := httprouter.Params{httprouter.Param{Key: "id", Value: "42"}}
+	test := GenerateHandleTesterWithURLParams(t, rh, false, params)
+	w := test("GET", url.Values{})
 
-	context.Set(req, main.Params, httprouter.Params{})
-
-	rh.ServeHTTP(w, req)
 	assert(t, w.Code == http.StatusOK, "expected read handler to return 200, instead got %d", w.Code)
 	assert(t, !strings.Contains(w.Body.String(), "editor"), "expect non logged in user of read handler to not be able to view editor, but editor was shown")
 
-	context.Set(req, main.UserKeyName, user1)
-	rh.ServeHTTP(w, req)
+	test = GenerateHandleTesterWithURLParams(t, rh, true, params)
+	w = test("GET", url.Values{})
 	assert(t, w.Code == http.StatusOK, "expected read handler to return 200, instead got %d", w.Code)
 	assert(t, strings.Contains(w.Body.String(), "editor"), "expect non logged in user of read handler to not be able to view editor, but editor was shown")
 }
@@ -52,4 +46,14 @@ func TestUpdateBookReviewHandler(t *testing.T) {
 	//updateBookHandler := app.UpdateBookReviewHandler(mockDB)
 	//test := GenerateHandleTester(t, app.Wrap(updateBookHandler), true)
 	//w := test("PUT", url.Values{""})
+}
+
+func TestDeleteBookReviewHandler(t *testing.T) {
+	mockDB := &MockBookReviewDB{shouldFail: false}
+	deleteBookHandler := app.Wrap(app.DeleteBookReviewHandler(mockDB))
+	params := httprouter.Params{httprouter.Param{Key: "id", Value: "42"}}
+	test := GenerateHandleTesterWithURLParams(t, deleteBookHandler, true, params)
+	w := test("DELETE", url.Values{})
+
+	assert(t, w.Code == http.StatusOK, "expected delete book review to return 200 on success")
 }

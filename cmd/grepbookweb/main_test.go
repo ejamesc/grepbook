@@ -16,12 +16,14 @@ import (
 	"time"
 
 	"github.com/ejamesc/grepbook"
-	"github.com/ejamesc/grepbook/cmd/grepbookweb"
+	main "github.com/ejamesc/grepbook/cmd/grepbookweb"
 	"github.com/gorilla/context"
+	"github.com/julienschmidt/httprouter"
 	"github.com/spf13/viper"
 )
 
 var bookReview1 = &grepbook.BookReview{
+	UID:             "giEa2JTKrWEbTy2nbouLwc",
 	Title:           "War and Peace",
 	BookAuthor:      "Leo Tolstoy",
 	OverviewHTML:    "<p>Great book!</p>",
@@ -64,15 +66,27 @@ func GenerateHandleTester(
 	handleFunc http.Handler,
 	loggedIn bool,
 ) HandleTester {
+	return GenerateHandleTesterWithURLParams(
+		t,
+		handleFunc,
+		loggedIn,
+		httprouter.Params{},
+	)
+}
+
+// GenerateHandleTesterWithURLParams returns a handletester
+// given a httprouter.Params
+func GenerateHandleTesterWithURLParams(
+	t *testing.T,
+	handleFunc http.Handler,
+	loggedIn bool,
+	httpRouterParams httprouter.Params,
+) HandleTester {
 	// Given a method type ("GET", "POST", etc) and
 	// parameters, serve the response against the handler and
 	// return the ResponseRecorder.
 	return func(method string, params url.Values) *httptest.ResponseRecorder {
-		req, err := http.NewRequest(
-			method,
-			"",
-			strings.NewReader(params.Encode()),
-		)
+		req, err := http.NewRequest(method, "", strings.NewReader(params.Encode()))
 		ok(t, err)
 		req.Header.Set(
 			"Content-Type",
@@ -82,6 +96,7 @@ func GenerateHandleTester(
 		if loggedIn {
 			context.Set(req, main.UserKeyName, user1)
 		}
+		context.Set(req, main.Params, httpRouterParams)
 		handleFunc.ServeHTTP(w, req)
 		return w
 	}
