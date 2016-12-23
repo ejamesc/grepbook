@@ -60,3 +60,33 @@ func TestIsUserPasswordCorrect(t *testing.T) {
 	res = testDB.IsUserPasswordCorrect(user1.Email, "someshit")
 	equals(t, false, res)
 }
+
+func TestUpdateUser(t *testing.T) {
+	testEmail := "kimil@sung.com"
+	uCreate, err := testDB.CreateUser(testEmail, "allthepower2")
+	ok(t, err)
+
+	// Test name edit
+	resUser, err := testDB.UpdateUser(testEmail, grepbook.UserDelta{Name: "Kim Il Sung"})
+	ok(t, err)
+	assert(t, uCreate.Name != resUser.Name, "expect edited user to have a different name")
+	assert(t, resUser.Name == "Kim Il Sung", "expect edited user to be called Kim Il Sung after updating")
+
+	// Ensure the password isn't returned with the user
+	equals(t, "", uCreate.Password)
+	equals(t, "", resUser.Password)
+
+	// Test password edit
+	resUser, err = testDB.UpdateUser(testEmail, grepbook.UserDelta{Password: "someotherpasswd"})
+	ok(t, err)
+	assert(t, testDB.IsUserPasswordCorrect(testEmail, "someotherpasswd"), "expect password to have been udpated")
+
+	// Test email edit
+	resUser, err = testDB.UpdateUser(testEmail, grepbook.UserDelta{Email: "blah@dprk.com"})
+	ok(t, err)
+	assert(t, resUser.Email != testEmail, "expect email to have been changed")
+	u, err := testDB.GetUser("blah@dprk.com")
+	ok(t, err)
+	equals(t, "Kim Il Sung", u.Name)
+	equals(t, "blah@dprk.com", u.Email)
+}

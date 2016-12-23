@@ -10,10 +10,101 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+const workFactor = 10
+
 type User struct {
 	ID       uint64 `json:"id"`
+	Name     string `json:"string"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+// save is a private function to save user details to the database
+func (u *User) save(db *DB) error {
+	isCreate := u.ID == 0
+	return db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket(users_bucket)
+		if b == nil {
+			return fmt.Errorf("no %s bucket exists", string(users_bucket))
+		}
+
+		// If this is user creation, we handle some special cases
+		if isCreate {
+			val := b.Get([]byte(u.Email))
+			if val != nil {
+				return ErrDuplicateRow
+			}
+
+			id, err := b.NextSequence()
+			if err != nil {
+				return err
+			}
+			u.ID = id
+		}
+
+		usrJSON, err := json.Marshal(u)
+		if err != nil {
+			return fmt.Errorf("error with marshalling user object: %s", err)
+		}
+		return b.Put([]byte(u.Email), usrJSON)
+	})
+}
+
+// UserDelta is a struct to contain user details for updating
+type UserDelta struct {
+	Email    string
+	Name     string
+	Password string
+}
+
+// UpdateUser updates the user with the given email address.
+// Note that we don't provide an update method on the user object,
+// in order to handle all the scenarios that may arise from this.
+func (db *DB) UpdateUser(userEmail string, ud UserDelta) (*User, error) {
+	name, email := strings.TrimSpace(ud.Name), strings.TrimSpace(ud.Email)
+	password := ud.Password
+
+	user, err := db.getFullUser(userEmail)
+	if err != nil {
+		return nil, err
+	}
+
+	if password != "" {
+		hashedP, err := bcrypt.GenerateFromPassword([]byte(password), workFactor)
+		if err != nil {
+			return nil, fmt.Errorf("error generating bcrypt hash: ", err)
+		}
+		user.Password = string(hashedP)
+	}
+
+	if name != "" {
+		user.Name = name
+	}
+
+	if email != "" && email != user.Email {
+		newU := &User{
+			Email:    email,
+			Name:     user.Name,
+			Password: user.Password,
+		}
+		err = newU.save(db)
+		if err != nil {
+			return nil, err
+		}
+		err := db.DeleteUser(user.Email)
+		if err != nil {
+			return nil, err
+		}
+		newU.Password = ""
+		return newU, nil
+	} else {
+		err = user.save(db)
+		if err != nil {
+			return nil, err
+		}
+		user.Password = ""
+		return user, nil
+	}
 }
 
 // DoesAnyUserExist returns true if any users exists in the db, and
@@ -48,43 +139,33 @@ func (db *DB) CreateUser(email, password string) (*User, error) {
 	if !govalidator.IsEmail(email) {
 		return nil, fmt.Errorf("email is not a valid email address")
 	}
-
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), workFactor)
 	if err != nil {
 		return nil, err
 	}
 
-	err = db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket(users_bucket)
-		if b == nil {
-			return fmt.Errorf("no %s bucket exists", string(users_bucket))
-		}
-		val := b.Get([]byte(email))
-		if val != nil {
-			return ErrDuplicateRow
-		}
+	user = &User{Email: email, Password: string(hashedPassword)}
+	err = user.save(db)
 
-		id, err := b.NextSequence()
-		if err != nil {
-			return err
-		}
-
-		user = &User{ID: id, Email: email, Password: string(hashedPassword)}
-		userJSON, err := json.Marshal(user)
-		if err != nil {
-			return fmt.Errorf("error with marshalling new user object: %s", err)
-		}
-		return b.Put([]byte(email), userJSON)
-	})
 	if err != nil {
 		return nil, err
 	}
+	// we clear out the password
 	user.Password = ""
 	return user, nil
 }
 
 // GetUser returns a user. If no user exists, a grepbook.ErrNoRows error is returned.
 func (db *DB) GetUser(email string) (*User, error) {
+	u, err := db.getFullUser(email)
+	if err != nil {
+		return nil, err
+	}
+	u.Password = ""
+	return u, nil
+}
+
+func (db *DB) getFullUser(email string) (*User, error) {
 	var user User
 	err := db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket(users_bucket)
@@ -100,8 +181,8 @@ func (db *DB) GetUser(email string) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	user.Password = ""
 	return &user, nil
+
 }
 
 // DeleteUser deletes a user. If no user is deleted, nothing happens
