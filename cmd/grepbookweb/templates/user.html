@@ -1,0 +1,46 @@
+{{ define "header-user" }}
+{{ end }}
+{{ define "scripts-user" }}
+{{ end }}
+
+<div class='row'>
+  <div class='small-12 medium-offset-1 columns'>
+    <h2>User Profile</h2>
+    {{ if ne (len .Flashes) 0 }}
+      {{ range .Flashes }}
+      <div data-alert class='alert-box warning' id='alert-box'>
+        {{ . }}
+        <a href='#' onclick='hideFlash(this)' class='close'>&times;</a>
+      </div>
+      {{ end }}
+    {{ end }}
+  </div><!--columns-->
+</div>
+
+<div class='row'>
+  <form role='form' action='/user' method='post'>
+    <div class='small-12 medium-5 medium-offset-1 columns'>
+      <label>Email
+        <input type="text" name="email" placeholder="Email" value="{{ .User.Email }}"/>
+      </label>
+      <label>Name
+        <input type="text" name="name" placeholder="Display Name" value="{{ .User.Name }}"/>
+      </label>
+    </div>
+
+    <div class='small-12 medium-5 end columns'>
+      <label>Old Password
+        <input type="password" name="old-password" placeholder="Password"/>
+      </label>
+      <label>New Password
+        <input type="password" name="new-password" placeholder="Fancy secure new password"/>
+      </label>
+      <label>New Password, Repeated
+        <input type="password" name="new-password2" placeholder="Repeat that fancy new password"/>
+      </label>
+      <input class="button success right" type="submit" value="Update details &rarr;" />
+    </div>
+  </form> 
+</div>
+  </div>
+</div>

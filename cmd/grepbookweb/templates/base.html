@@ -29,11 +29,12 @@
     <header>
     <div class="row full-width">
       <div class="small-12 medium-10 medium-offset-1 columns">
-        <h1><a href='/'>grepbook</a></h1> &middot; <h3>book summaries by cedric chin</h3>
+        <h1><a href='/'>grepbook</a></h1> {{ if .Username }}&middot; <h3>book summaries by {{ .Username }}</h3>{{ end }}
         <nav class='header-actions'>
         <ul>
           {{ if .User }}<li><a id="new-review-button" href="javascript:void(0)">new</a></li>{{ end }}
           <li><a href="/about">about</a></li>
+          {{ if .User }}<li><a href="/user">{{ .User.Email }}</a></li>{{ end }}
           {{ if .User }}<li><a href="javascript:;" onclick='document.forms["logout"].submit()'>logout</a></li>{{ end }}
         </ul>
         </nav>

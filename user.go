@@ -165,6 +165,32 @@ func (db *DB) GetUser(email string) (*User, error) {
 	return u, nil
 }
 
+// GetName returns the username of the first (and usually only) user in the db
+func (db *DB) GetName() (string, error) {
+	username := ""
+	err := db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket(users_bucket)
+		if b == nil {
+			return fmt.Errorf("no %s bucket exists", string(users_bucket))
+		}
+
+		b.ForEach(func(k, v []byte) error {
+			var user User
+			err := json.Unmarshal(v, &user)
+			if err != nil {
+				return err
+			}
+			username = user.Name
+			return nil
+		})
+		return nil
+	})
+	if err != nil {
+		return "", err
+	}
+	return username, nil
+}
+
 func (db *DB) getFullUser(email string) (*User, error) {
 	var user User
 	err := db.View(func(tx *bolt.Tx) error {

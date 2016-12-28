@@ -48,8 +48,21 @@ func (a *App) loggingHandler(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, req)
 
-		rw := w.(ResponseWriter)
-		a.logr.Log("Completed %v %s in %v", rw.Status(), http.StatusText(rw.Status()), time.Since(t1))
+		rw, ok := w.(ResponseWriter)
+		if ok {
+			a.logr.Log("Completed %v %s in %v", rw.Status(), http.StatusText(rw.Status()), time.Since(t1))
+		} else {
+			a.logr.Log("Unable to log due to invalid ResponseWriter conversion")
+		}
+	}
+	return http.HandlerFunc(fn)
+}
+
+// responseWriterConverterHandler is a middleware to ensure that a http.Handler
+// uses our own custom Response Writer, in order to capture response data.
+func responseWriterWrapper(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, req *http.Request) {
+		next.ServeHTTP(NewResponseWriter(w), req)
 	}
 	return http.HandlerFunc(fn)
 }

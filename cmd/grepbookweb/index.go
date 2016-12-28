@@ -52,6 +52,20 @@ func (a *App) BookIndexHandler(db grepbook.BookReviewDB) HandlerWithError {
 	}
 }
 
+func (a *App) NotFoundHandler(w http.ResponseWriter, req *http.Request) {
+	user := getUser(req)
+	lp := &localPresenter{
+		PageTitle:       "Page not found",
+		PageURL:         "/404",
+		globalPresenter: a.gp,
+	}
+	if user != nil {
+		lp.User = user
+	}
+	a.rndr.HTML(w, http.StatusNotFound, "404", lp)
+	return
+}
+
 // sortBookReviews returns ongoing and done book reviews, sorted in reverse chronological order
 func sortBookReviews(brs grepbook.BookReviewArray) (ongoing, done grepbook.BookReviewArray) {
 	og, dn := grepbook.BookReviewArray{}, grepbook.BookReviewArray{}

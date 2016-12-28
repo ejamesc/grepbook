@@ -39,6 +39,7 @@ type globalPresenter struct {
 	SiteName    string
 	Description string
 	SiteURL     string
+	Username    string
 }
 
 // localPresenter contains the fields necessary for specific pages.
@@ -107,6 +108,10 @@ func main() {
 	cookieSecretKey := viper.GetString("cookieSecret")
 	logr := newLogger()
 	a := SetupApp(r, logr, []byte(cookieSecretKey), templateFolderPath)
+	usrname, err := db.GetName()
+	if err == nil {
+		a.gp.Username = usrname
+	}
 
 	common := alice.New(context.ClearHandler, a.loggingHandler, a.recoverHandler, a.userMiddlewareGenerator(db))
 	auth := common.Append(a.authMiddleware)
@@ -127,7 +132,13 @@ func main() {
 	r.Get("/signup", common.Then(a.Wrap(a.SignupPageHandler(db))))
 	r.Post("/signup", common.Then(a.Wrap(a.SignupPostHandler(db))))
 
+	r.Get("/user", auth.Then(a.Wrap(a.UserProfileHandler())))
+	r.Post("/user", auth.Then(a.Wrap(a.UserEditHandler(db))))
+
 	r.ServeFiles("/static/*filepath", http.Dir(staticFilePath))
+
+	def := alice.New(responseWriterWrapper).Extend(common)
+	r.NotFound = def.Then(responseWriterWrapper(http.HandlerFunc(a.NotFoundHandler)))
 
 	http.ListenAndServe(":3000", r)
 }
