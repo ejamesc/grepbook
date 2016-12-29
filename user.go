@@ -251,6 +251,7 @@ type UserDB interface {
 	DoesAnyUserExist() bool
 	CreateUser(email, password string) (*User, error)
 	GetUser(email string) (*User, error)
+	UpdateUser(userEmail string, ud UserDelta) (*User, error)
 	IsUserPasswordCorrect(email, password string) bool
 	DeleteUser(email string) error
 	CreateSessionForUser(email string) (*Session, error)

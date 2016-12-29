@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/ejamesc/grepbook"
-	"github.com/ejamesc/grepbook/cmd/grepbookweb"
+	main "github.com/ejamesc/grepbook/cmd/grepbookweb"
 )
 
 type MockUserDB struct {
@@ -52,6 +52,13 @@ func (db *MockUserDB) CreateSessionForUser(email string) (*grepbook.Session, err
 		return nil, fmt.Errorf("some error")
 	}
 	return &grepbook.Session{Key: "abcd1234", Email: email}, nil
+}
+
+func (db *MockUserDB) UpdateUser(emailString string, userdiff grepbook.UserDelta) (*grepbook.User, error) {
+	if db.hasError {
+		return nil, fmt.Errorf("some error")
+	}
+	return user1, nil
 }
 
 func TestSignupPageHandler(t *testing.T) {
