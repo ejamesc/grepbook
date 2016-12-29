@@ -1,16 +1,20 @@
 {{ define "header-user" }}
 {{ end }}
 {{ define "scripts-user" }}
+ <script type="text/javascript" src="/static/js/vendor/jquery.js"></script>
+ <script type="text/javascript" src="/static/js/vendor/foundation.min.js"></script>
 {{ end }}
 
 <div class='row'>
-  <div class='small-12 medium-offset-1 columns'>
+  <div class='small-12 medium-10 medium-offset-1 end columns'>
     <h2>User Profile</h2>
     {{ if ne (len .Flashes) 0 }}
       {{ range .Flashes }}
-      <div data-alert class='alert-box warning' id='alert-box'>
+      <div class='alert callout' data-closable>
         {{ . }}
-        <a href='#' onclick='hideFlash(this)' class='close'>&times;</a>
+        <button class="close-button" aria-label="Dismiss alert" type="button" onClick="function(){ document.getElementsByClassName('close-button')[0].parent.remove }" data-close>
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
       {{ end }}
     {{ end }}
