@@ -1,14 +1,19 @@
 {{ define "header-login" }}{{ end }}
-{{ define "scripts-login" }}{{ end }}
+{{ define "scripts-login" }}
+<script type="text/javascript" src="/static/js/vendor/jquery.js"></script>
+<script type="text/javascript" src="/static/js/vendor/foundation.min.js"></script>
+{{ end }}
 
 <div class='row full-width'>
   <div class='small-12 medium-6 medium-offset-3 columns'>
     <h2>Login</h2>
     {{ if ne (len .Flashes) 0 }}
       {{ range .Flashes }}
-      <div data-alert class='alert-box warning' id='alert-box'>
+      <div class='alert callout' data-closable>
         {{ . }}
-        <a href='#' onclick='hideFlash(this)' class='close'>&times;</a>
+        <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
       {{ end }}
     {{ end }}

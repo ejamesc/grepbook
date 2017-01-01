@@ -13,7 +13,7 @@
       {{ range .Flashes }}
       <div class='alert callout' data-closable>
         {{ . }}
-        <button class="close-button" aria-label="Dismiss alert" type="button" onClick="function(){ document.getElementsByClassName('close-button')[0].parent.remove }" data-close>
+        <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
