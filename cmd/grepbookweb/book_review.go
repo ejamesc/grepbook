@@ -61,6 +61,8 @@ func (a *App) CreateBookReviewHandler(db grepbook.BookReviewDB) HandlerWithError
 		title, author, url, chapterList := req.FormValue("title"), req.FormValue("author"), req.FormValue("url"), req.FormValue("chapters")
 
 		if strings.TrimSpace(title) == "" {
+			a.saveFlash(w, req, "Book review title cannot be empty!")
+			http.Redirect(w, req, "/", 302)
 			return newError(400, "title cannot be empty", fmt.Errorf("title is empty"))
 		}
 

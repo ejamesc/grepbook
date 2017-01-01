@@ -2,11 +2,24 @@
   <link rel="stylesheet" href="/static/css/vendor/css/font-awesome.min.css">
 {{ end }}
 {{ define "scripts-index" }}
+<script type="text/javascript" src="/static/js/vendor/jquery.js"></script>
+<script type="text/javascript" src="/static/js/vendor/foundation.min.js"></script>
 {{ end }}
 
 {{ if gt (len .Ongoing) 0 }}
 <div class='row'>
   <div class='small-12 medium-10 medium-offset-1 columns'>
+    {{ if ne (len .Flashes) 0 }}
+      {{ range .Flashes }}
+      <div class='alert callout' data-closable>
+        {{ . }}
+        <button class="close-button" aria-label="Dismiss alert" type="button" onClick="function(){ document.getElementsByClassName('close-button')[0].parent.remove }" data-close>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {{ end }}
+    {{ end }}
+
     <h2>Ongoing</h2>
   </div>
 </div>

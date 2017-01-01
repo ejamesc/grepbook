@@ -17,13 +17,16 @@ func (a *App) IndexHandler(db grepbook.BookReviewDB) HandlerWithError {
 		}
 
 		obr, dbr := sortBookReviews(brs)
+		fs := a.getFlashes(w, req)
 		pp := struct {
 			Ongoing grepbook.BookReviewArray
 			Done    grepbook.BookReviewArray
+			Flashes []interface{}
 			*localPresenter
 		}{
 			Ongoing:        obr,
 			Done:           dbr,
+			Flashes:        fs,
 			localPresenter: &localPresenter{PageTitle: "", PageURL: "", globalPresenter: a.gp, User: user},
 		}
 		err = a.rndr.HTML(w, http.StatusOK, "index", pp)
