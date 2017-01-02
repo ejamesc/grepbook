@@ -24,6 +24,19 @@ type BookReview struct {
 	Chapters        []*Chapter `json:"chapters"`
 }
 
+func (br BookReview) IsNew() bool {
+	isNew := strings.TrimSpace(br.OverviewHTML) == ""
+	if !isNew {
+		return false
+	}
+	for _, chap := range br.Chapters {
+		if strings.TrimSpace(chap.HTML) != "" {
+			return false
+		}
+	}
+	return true
+}
+
 // Sorting BookReviewArray
 type BookReviewArray []*BookReview
 

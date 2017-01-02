@@ -27,7 +27,7 @@ func (a *App) ReadHandler(db grepbook.BookReviewDB) HandlerWithError {
 			return newError(500, "error retrieving book review:", err)
 		}
 
-		isNew := strings.TrimSpace(br.OverviewHTML) == ""
+		isNew := br.IsNew()
 		pp := struct {
 			BookReview *grepbook.BookReview
 			BRHTML     template.HTML

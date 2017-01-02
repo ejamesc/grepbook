@@ -92,3 +92,18 @@ func TestBookReviewSort(t *testing.T) {
 		}
 	}
 }
+
+func TestBookReviewIsNew(t *testing.T) {
+	chapters := grepbook.CreateChapters("")
+	br, err := testDB.CreateBookReview(
+		"Superintelligence",
+		"Nick Bostrom",
+		"https://www.amazon.com/Superintelligence-Dangers-Strategies-Nick-Bostrom/dp/1501227742",
+		"",
+		"",
+		chapters)
+	ok(t, err)
+	equals(t, true, br.IsNew())
+
+	equals(t, false, bookReview1.IsNew())
+}

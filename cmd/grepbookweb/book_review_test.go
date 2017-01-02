@@ -17,12 +17,22 @@ func TestReadHandler(t *testing.T) {
 	w := test("GET", url.Values{})
 
 	assert(t, w.Code == http.StatusOK, "expected read handler to return 200, instead got %d", w.Code)
-	assert(t, !strings.Contains(w.Body.String(), "editor"), "expect non logged in user of read handler to not be able to view editor, but editor was shown")
 
 	test = GenerateHandleTesterWithURLParams(t, rh, true, params)
 	w = test("GET", url.Values{})
 	assert(t, w.Code == http.StatusOK, "expected read handler to return 200, instead got %d", w.Code)
+}
+
+func TestWritePageDisplayHandler(t *testing.T) {
+	mockDB := &MockBookReviewDB{shouldFail: false}
+	rh := app.Wrap(app.WritePageDisplayHandler(mockDB))
+	params := httprouter.Params{httprouter.Param{Key: "id", Value: "42"}}
+	test := GenerateHandleTesterWithURLParams(t, rh, true, params)
+	w := test("GET", url.Values{})
+
+	assert(t, w.Code == http.StatusOK, "expected read handler to return 200, instead got %d", w.Code)
 	assert(t, strings.Contains(w.Body.String(), "editor"), "expect non logged in user of read handler to not be able to view editor, but editor was shown")
+
 }
 
 func TestCreateBookReviewHandler(t *testing.T) {

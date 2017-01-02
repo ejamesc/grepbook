@@ -90,7 +90,20 @@ nav.header-actions ul li {
 
 /* EDITING STYLES */
 #editor {
-  height: 450px;
+  height: 250px;
+}
+
+.chapter-summary {
+  cursor: pointer;
+}
+
+.draggable {
+  cursor: move;
+}
+
+.grey-draggable {
+  font-size: 80%;
+  color: #aaa;
 }
 
 /* INDEX PAGE */
