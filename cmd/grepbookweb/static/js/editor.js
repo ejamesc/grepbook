@@ -55,5 +55,10 @@ document.getElementById("delete-button").onclick = function() {
 
 document.getElementById("ongoing-switch").onclick = function() {
   brm.isOngoing(this.checked);
+  if (this.checked) { 
+    document.getElementById("ongoing-label").style.display = "block";
+  } else {
+    document.getElementById("ongoing-label").style.display = "none";
+  }
   brm.save();
 };

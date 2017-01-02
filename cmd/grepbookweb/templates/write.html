@@ -15,34 +15,18 @@
   <div class='small-12 medium-10 medium-offset-1 columns'>
     <h2>{{ .BookReview.Title }}</h2>
     <h5 class='summary-subheader'>by {{ .BookReview.BookAuthor }} &middot; {{ .BookReview.DateTimeCreated | datefmt }} &middot; <a href='{{ .BookReview.BookURL }}'>Buy from Amazon</a> {{ if .User }}&middot; <a class='black-link' id='edit-review-button' href="javascript:void(0)"><i class='fa fa-pencil'></i></a>{{ end }}</h5>
-    {{ if .BookReview.IsOngoing }}<span class='label success label-right'>Ongoing</span>{{ end }}
+    <span id='ongoing-label' class='label success label-right' {{ if not .BookReview.IsOngoing }}style="display: none;"{{ end }}>Ongoing</span>
+    <span class='label secondary label-right'><a href='/summaries/{{ .BookReview.UID }}'><i class='fa fa-rocket'></i> View</a></span>
     <hr/>
   </div>
 </div>
 <div class='row'>
-  <div class='small-12 {{ if .User }}medium-10 medium-offset-1{{ else }}medium-8 medium-offset-1{{ end }} columns'>
-    {{ if .User }}<div id='editor'>{{ end }}
-    {{ if and .User .IsNew }}
-      {{ range .BookReview.Chapters }}
-      <h2>{{ .Heading }}</h2>
-      {{ end }}
-    {{ end }}
-    {{ if not .IsNew }}
+  <div class='small-12 medium-10 medium-offset-1 columns'>
+    <div id='editor'>
       {{ .BRHTML }}
-    {{ end }}
-    {{ if .User }}</div>{{ end }}
+    </div>
   </div>
-  {{ if not .User }}
-  <div class='small-12 medium-2 end columns'>
-    <h4>Chapters</h4>
-    <ol class='chapter-list'>
-      {{ range .BookReview.Chapters }}
-      <li><a href="#{{ .ID }}">{{ .Heading }}</a></li>
-      {{ end }}
-    </ol>
-  </div>
-  {{ end }}
-</div>
+ </div>
 {{ if .User }}
 <div class='row'>
   <div class='small-12 medium-10 medium-offset-1 end columns'>
