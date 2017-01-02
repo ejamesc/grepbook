@@ -115,14 +115,18 @@ nav.header-actions ul li {
   display: inline-block;
 }
 
-.summary-ongoing {
+.label-right {
   float: right;
   display: inline-block;
   padding: 7px;
+  margin-left: 3px;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
 }
+
+.label-right a { color: #eee; }
+.label-right a:hover { color: #fffced; }
 
 .af-link {
   background-color: #555;

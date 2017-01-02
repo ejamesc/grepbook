@@ -31,6 +31,42 @@ func (a *App) ReadHandler(db grepbook.BookReviewDB) HandlerWithError {
 		pp := struct {
 			BookReview *grepbook.BookReview
 			BRHTML     template.HTML
+			IsNew      bool
+			*localPresenter
+		}{
+			BookReview:     br,
+			BRHTML:         template.HTML(br.OverviewHTML),
+			IsNew:          isNew,
+			localPresenter: &localPresenter{PageTitle: "Summary template", PageURL: "/summary", globalPresenter: a.gp, User: user},
+		}
+
+		err = a.rndr.HTML(w, http.StatusOK, "read", pp)
+		if err != nil {
+			a.logr.Log(newRenderErrMsg(err))
+		}
+		return nil
+	}
+}
+
+func (a *App) WritePageDisplayHandler(db grepbook.BookReviewDB) HandlerWithError {
+	return func(w http.ResponseWriter, req *http.Request) error {
+		params := GetParamsObj(req)
+		uid := params.ByName("id")
+
+		user := getUser(req)
+
+		br, err := db.GetBookReview(uid)
+		if err != nil {
+			if err == grepbook.ErrNoRows {
+				return newError(http.StatusNotFound, "no book review with that uid found", err)
+			}
+			return newError(500, "error retrieving book review:", err)
+		}
+
+		isNew := strings.TrimSpace(br.OverviewHTML) == ""
+		pp := struct {
+			BookReview *grepbook.BookReview
+			BRHTML     template.HTML
 			BRJSON     string
 			IsNew      bool
 			*localPresenter
@@ -48,7 +84,7 @@ func (a *App) ReadHandler(db grepbook.BookReviewDB) HandlerWithError {
 			a.logr.Log("problem marshalling book review: ", err)
 		}
 
-		err = a.rndr.HTML(w, http.StatusOK, "read", pp)
+		err = a.rndr.HTML(w, http.StatusOK, "write", pp)
 		if err != nil {
 			a.logr.Log(newRenderErrMsg(err))
 		}

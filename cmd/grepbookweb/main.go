@@ -121,6 +121,7 @@ func main() {
 
 	r.Post("/summaries", auth.Then(a.Wrap(a.CreateBookReviewHandler(db))))
 	r.Get("/summaries/:id", common.Then(a.Wrap(a.ReadHandler(db))))
+	r.Get("/summaries/:id/edit", auth.Then(a.Wrap(a.WritePageDisplayHandler(db))))
 	r.Put("/summaries/:id", auth.Then(a.Wrap(a.UpdateBookReviewHandler(db))))
 	r.Delete("/summaries/:id", auth.Then(a.Wrap(a.DeleteBookReviewHandler(db))))
 

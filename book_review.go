@@ -45,10 +45,11 @@ type Chapter struct {
 // CreateChapter takes an input string of chapter headings separated by commas,
 // and returns a list of Chapters with headings
 func CreateChapters(input string) []*Chapter {
-	headings := strings.Split(input, ",")
-	if len(headings) < 1 {
+	input = strings.TrimSpace(input)
+	if input == "" {
 		return []*Chapter{}
 	}
+	headings := strings.Split(input, ",")
 	res := make([]*Chapter, len(headings))
 	for i, h := range headings {
 		res[i] = &Chapter{ID: shortuuid.New(), Heading: strings.TrimSpace(h)}
