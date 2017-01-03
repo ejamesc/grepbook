@@ -37,6 +37,88 @@ func (br BookReview) IsNew() bool {
 	return true
 }
 
+// NewChapter creates a new chapter given a heading
+func NewChapter(heading, delta, html string) *Chapter {
+	delta, html = strings.TrimSpace(delta), strings.TrimSpace(html)
+	return &Chapter{ID: shortuuid.New(), Heading: heading, Delta: delta, HTML: html}
+}
+
+// AddChapter prepends a chapter to the list of chapters in the BookReview.
+func (br *BookReview) AddChapter(db BookReviewDB, chapter *Chapter) error {
+	br.Chapters = append(br.Chapters, &Chapter{})
+	copy(br.Chapters[1:], br.Chapters[0:])
+	br.Chapters[0] = chapter
+
+	return br.Save(db)
+}
+
+// GetChapter returns the chapter and index in the BookReview with the id given.
+// If no such chapter id exists, -1 index and nil is returned.
+func (br *BookReview) GetChapter(id string) (index int, chapter *Chapter) {
+	for i, c := range br.Chapters {
+		if c.ID == id {
+			return i, c
+		}
+	}
+	return -1, nil
+}
+
+// ChapterDelta is a struct for storing changes to a chapter
+type ChapterDelta struct {
+	Heading *string
+	HTML    *string
+	Delta   *string
+}
+
+// UpdateChapter updates the chapter given.
+func (br *BookReview) UpdateChapter(db BookReviewDB, chapID string, cd ChapterDelta) error {
+	i, cp := br.GetChapter(chapID)
+	if cd.Heading != nil {
+		cp.Heading = *cd.Heading
+	}
+	if cd.HTML != nil {
+		cp.HTML = *cd.HTML
+	}
+	if cd.Delta != nil {
+		cp.Delta = *cd.Delta
+	}
+	br.Chapters[i] = cp
+	return br.Save(db)
+}
+
+func (br *BookReview) ReorderChapter(db BookReviewDB, oldIndex, newIndex int) error {
+	if oldIndex >= len(br.Chapters) || newIndex >= len(br.Chapters) {
+		return fmt.Errorf("either oldIndex (%d) or newIndex (%d) is out of bounds for Chapter list of len %d", oldIndex, newIndex, len(br.Chapters))
+	}
+	cp := br.Chapters[oldIndex]
+	// Delete
+	copy(br.Chapters[oldIndex:], br.Chapters[oldIndex+1:])
+	br.Chapters[len(br.Chapters)-1] = &Chapter{}
+	br.Chapters = br.Chapters[:len(br.Chapters)-1]
+
+	// Insert
+	br.Chapters = append(br.Chapters, &Chapter{})
+	copy(br.Chapters[newIndex+1:], br.Chapters[newIndex:])
+	br.Chapters[newIndex] = cp
+
+	return br.Save(db)
+}
+
+// DeleteChapter deletes a chapter with the given chapter ID.
+// If no such chapter exists, an error is returned
+func (br *BookReview) DeleteChapter(db BookReviewDB, chapID string) error {
+	i, _ := br.GetChapter(chapID)
+	if i == -1 {
+		return fmt.Errorf("no such chapter id found")
+	}
+
+	copy(br.Chapters[i:], br.Chapters[i+1:])
+	br.Chapters[len(br.Chapters)-1] = &Chapter{}
+	br.Chapters = br.Chapters[:len(br.Chapters)-1]
+
+	return br.Save(db)
+}
+
 // Sorting BookReviewArray
 type BookReviewArray []*BookReview
 

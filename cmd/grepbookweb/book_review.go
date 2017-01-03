@@ -107,7 +107,7 @@ func (a *App) CreateBookReviewHandler(db grepbook.BookReviewDB) HandlerWithError
 		if err != nil {
 			return err
 		}
-		http.Redirect(w, req, "/summaries/"+br.UID, 302)
+		http.Redirect(w, req, "/summaries/"+br.UID+"/edit", 302)
 		return nil
 	}
 }
@@ -167,6 +167,12 @@ func (a *App) DeleteBookReviewHandler(db grepbook.BookReviewDB) HandlerWithError
 		apiResp := &APIResponse{Message: "Book review deleted successfully"}
 		a.rndr.JSON(w, http.StatusOK, apiResp)
 
+		return nil
+	}
+}
+
+func (a *App) CreateChapterHandler(db grepbook.BookReviewDB) HandlerWithError {
+	return func(w http.ResponseWriter, req *http.Request) error {
 		return nil
 	}
 }

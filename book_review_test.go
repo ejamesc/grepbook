@@ -1,6 +1,7 @@
 package grepbook_test
 
 import (
+	"fmt"
 	"sort"
 	"testing"
 	"time"
@@ -43,13 +44,7 @@ func TestGetBookReview(t *testing.T) {
 }
 
 func TestDeleteBookReview(t *testing.T) {
-	chapters := grepbook.CreateChapters("Introduction, Preface")
-	br, err := testDB.CreateBookReview(
-		"Superintelligence",
-		"Nick Bostrom",
-		"https://www.amazon.com/Superintelligence-Dangers-Strategies-Nick-Bostrom/dp/1501227742",
-		"<p>Hello</p>",
-		"{}", chapters)
+	br, err := createTestBookReview("Introduction, Preface")
 	ok(t, err)
 
 	err = testDB.DeleteBookReview(br.UID)
@@ -94,16 +89,130 @@ func TestBookReviewSort(t *testing.T) {
 }
 
 func TestBookReviewIsNew(t *testing.T) {
-	chapters := grepbook.CreateChapters("")
-	br, err := testDB.CreateBookReview(
+	br, err := createTestBookReview("")
+	ok(t, err)
+	equals(t, true, br.IsNew())
+
+	equals(t, false, bookReview1.IsNew())
+}
+
+func TestAddChapter(t *testing.T) {
+	br, err := createTestBookReview("")
+	ok(t, err)
+
+	err = br.AddChapter(testDB, grepbook.NewChapter("New Chapter", "", ""))
+	ok(t, err)
+	equals(t, 1, len(br.Chapters))
+
+	br2, err := testDB.GetBookReview(br.UID)
+	ok(t, err)
+	equals(t, 1, len(br2.Chapters))
+}
+
+func TestGetChapter(t *testing.T) {
+	br, err := createTestBookReview("Terrible World")
+	ok(t, err)
+	ct := br.Chapters[0]
+
+	index, chapUnderTest := br.GetChapter(ct.ID)
+	equals(t, ct, chapUnderTest)
+	equals(t, 0, index)
+}
+
+func TestUpdateChapter(t *testing.T) {
+	br, err := createTestBookReview("Intro, Outtro")
+	ok(t, err)
+	cp := br.Chapters[0]
+	newTitle := "Preface"
+	delta := grepbook.ChapterDelta{Heading: &newTitle}
+
+	err = br.UpdateChapter(testDB, cp.ID, delta)
+	ok(t, err)
+	equals(t, "Preface", cp.Heading)
+	equals(t, "", cp.HTML)
+	equals(t, "", cp.Delta)
+
+	br2, err := testDB.GetBookReview(br.UID)
+	ok(t, err)
+	_, cp2 := br2.GetChapter(cp.ID)
+	equals(t, "Preface", cp2.Heading)
+	equals(t, cp.HTML, cp2.HTML)
+	equals(t, cp.Delta, cp2.Delta)
+}
+
+func TestReorderChapter(t *testing.T) {
+	br, err := createTestBookReview("First chap, Second chap, Third chap, Fourth chap")
+	ok(t, err)
+	equals(t, 4, len(br.Chapters))
+
+	err = br.ReorderChapter(testDB, 4, 0)
+	assert(t, err != nil, "expect ReorderChapter to return error when index >= chapter len")
+
+	// Table tests for reordering
+	tables := []struct {
+		Heading1 string
+		Heading2 string
+		oldIndex int
+		newIndex int
+	}{
+		{"Third chap", "Fourth chap", 3, 2},
+		{"Fourth chap", "Second chap", 1, 2},
+		{"Fourth chap", "First chap", 0, 1},
+		{"Second chap", "Third chap", 3, 0},
+	}
+
+	for _, tb := range tables {
+		err = br.ReorderChapter(testDB, tb.oldIndex, tb.newIndex)
+		// Uncomment this to visualise the run of the table test:
+		// visualiseOrdering(br.Chapters)
+		ok(t, err)
+		equals(t, tb.Heading1, br.Chapters[tb.oldIndex].Heading)
+		equals(t, tb.Heading2, br.Chapters[tb.newIndex].Heading)
+
+		br2, err := testDB.GetBookReview(br.UID)
+		ok(t, err)
+		equals(t, tb.Heading1, br2.Chapters[tb.oldIndex].Heading)
+		equals(t, tb.Heading2, br2.Chapters[tb.newIndex].Heading)
+	}
+}
+
+func TestDeleteChapter(t *testing.T) {
+	br, err := createTestBookReview("First chap, Second chap")
+	ok(t, err)
+	cp := br.Chapters[0]
+	equals(t, 2, len(br.Chapters))
+
+	err = br.DeleteChapter(testDB, cp.ID)
+	ok(t, err)
+	equals(t, 1, len(br.Chapters))
+
+	br2, err := testDB.GetBookReview(br.UID)
+	ok(t, err)
+	equals(t, 1, len(br2.Chapters))
+
+	err = br2.DeleteChapter(testDB, cp.ID)
+	assert(t, err != nil, "expect error to return when deleting non-existing chapter in book review, instead got nil")
+}
+
+// Helpers
+
+func createTestBookReview(chapStr string) (*grepbook.BookReview, error) {
+	chapters := grepbook.CreateChapters(chapStr)
+	return testDB.CreateBookReview(
 		"Superintelligence",
 		"Nick Bostrom",
 		"https://www.amazon.com/Superintelligence-Dangers-Strategies-Nick-Bostrom/dp/1501227742",
 		"",
 		"",
 		chapters)
-	ok(t, err)
-	equals(t, true, br.IsNew())
+}
 
-	equals(t, false, bookReview1.IsNew())
+// Small helper function to visualise ordering.
+// To use, plunk into TestReorderChapter, and run with go test -v
+func visualiseOrdering(chps []*grepbook.Chapter) {
+	fmt.Printf("%+v\n", chps[0])
+	fmt.Printf("%+v\n", chps[1])
+	fmt.Printf("%+v\n", chps[2])
+	fmt.Printf("%+v\n", chps[3])
+	fmt.Println("====")
 }

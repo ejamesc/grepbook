@@ -107,17 +107,21 @@ var BookSummaryDetailsPopup = {
                    m(".modal-header.small-12.columns", m("h2", "Enter book details:")),
                    m("form", {role: "form", action: "/summaries", method: "post"}, [
                      m(".medium-6.small-12.columns", [
-                       m("input", {type: "text", placeholder: "Title", name: "title", value: vm._bookSummaryModel.title(), oninput: m.withAttr("value", vm._bookSummaryModel.title)}),
-                       m("input", {type: "text", placeholder: "Author", name: "author", value: vm._bookSummaryModel.bookAuthor(), oninput: m.withAttr("value", vm._bookSummaryModel.bookAuthor)}),
-                       m("input", {type: "text", placeholder: "Amazon URL", name: "url", value: vm._bookSummaryModel.bookURL(), oninput: m.withAttr("value", vm._bookSummaryModel.bookURL)}),
+                       m("label", "Title",
+                        m("input", {type: "text", placeholder: "Title", name: "title", value: vm._bookSummaryModel.title(), oninput: m.withAttr("value", vm._bookSummaryModel.title)})),
+                       m("label", "Author",
+                         m("input", {type: "text", placeholder: "Author", name: "author", value: vm._bookSummaryModel.bookAuthor(), oninput: m.withAttr("value", vm._bookSummaryModel.bookAuthor)})),
+                       m("label", "Amazon URL", 
+                         m("input", {type: "text", placeholder: "Amazon URL", name: "url", value: vm._bookSummaryModel.bookURL(), oninput: m.withAttr("value", vm._bookSummaryModel.bookURL)})),
                      ]),
                      m(".medium-6.small-12.columns", [
+                      m("label", "Chapters", 
                        m("textarea.chapterbox", (function() { 
                          var a = {name: "chapters", 
                            placeholder: "Chapter list, separated by commas"}; 
                          if (!vm.isCreateMode()) { a.readonly = "true"; }
                          return a;
-                       })(), vm._bookSummaryModel.chapterList()),
+                       })(), vm._bookSummaryModel.chapterList())),
                        vm.isCreateMode() ? m("input.button.float-right.success", {type: "submit", value: "Go go go!"}) : m(".button.float-right.success", {onclick: vm.save.bind(this)}, "Update!"),
                      ]),
                    ]),
