@@ -69,8 +69,8 @@ func TestUpdateBookReviewHandler(t *testing.T) {
 	w = test("PUT", strings.NewReader(fmt.Sprintf(`{"uid": "someOtherUUID"}`)))
 	equals(t, http.StatusForbidden, w.Code)
 
-	// JSON parsing error happens
-	w = test("PUT", strings.NewReader(fmt.Sprintf(`LOL`)))
+	// Malformed json supplied
+	w = test("PUT", strings.NewReader("LOL"))
 	equals(t, http.StatusInternalServerError, w.Code)
 
 	// User gives nonexistent uuid

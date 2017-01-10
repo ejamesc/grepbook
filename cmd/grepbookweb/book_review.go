@@ -174,12 +174,6 @@ func (a *App) DeleteBookReviewHandler(db grepbook.BookReviewDB) HandlerWithError
 	}
 }
 
-func (a *App) CreateChapterHandler(db grepbook.BookReviewDB) HandlerWithError {
-	return func(w http.ResponseWriter, req *http.Request) error {
-		return nil
-	}
-}
-
 func mergeBookReviewDeltas(oldBR, newBR *grepbook.BookReview) {
 	if newBR.Title != "" || newBR.Title != oldBR.Title {
 		oldBR.Title = newBR.Title
