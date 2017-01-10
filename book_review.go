@@ -65,9 +65,9 @@ func (br *BookReview) GetChapter(id string) (index int, chapter *Chapter) {
 
 // ChapterDelta is a struct for storing changes to a chapter
 type ChapterDelta struct {
-	Heading *string
-	HTML    *string
-	Delta   *string
+	Heading *string `json:"heading"`
+	HTML    *string `json:"html"`
+	Delta   *string `json:"delta"`
 }
 
 // UpdateChapter updates the chapter given.

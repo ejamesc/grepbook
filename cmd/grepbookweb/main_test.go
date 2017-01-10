@@ -2,6 +2,7 @@ package main_test
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -57,6 +58,7 @@ func (ml *MockLogger) Log(str string, v ...interface{}) {
 }
 
 type HandleTester func(method string, params url.Values) *httptest.ResponseRecorder
+type HandleBodyTester func(method string, body io.Reader) *httptest.ResponseRecorder
 
 // Given the current test runner and an http.Handler, generate a
 // HandleTester which will test its given input against the
@@ -74,7 +76,7 @@ func GenerateHandleTester(
 	)
 }
 
-// GenerateHandleTesterWithURLParams returns a handletester
+// GenerateHandleTesterWithURLParams returns a HandleTester
 // given a httprouter.Params
 func GenerateHandleTesterWithURLParams(
 	t *testing.T,
@@ -87,6 +89,31 @@ func GenerateHandleTesterWithURLParams(
 	// return the ResponseRecorder.
 	return func(method string, params url.Values) *httptest.ResponseRecorder {
 		req, err := http.NewRequest(method, "", strings.NewReader(params.Encode()))
+		ok(t, err)
+		req.Header.Set(
+			"Content-Type",
+			"application/x-www-form-urlencoded; param=value",
+		)
+		w := httptest.NewRecorder()
+		if loggedIn {
+			context.Set(req, main.UserKeyName, user1)
+		}
+		context.Set(req, main.Params, httpRouterParams)
+		handleFunc.ServeHTTP(w, req)
+		return w
+	}
+}
+
+// GenerateHandleBodyTesterWithURLParams returns a HandleBodyTester
+// given a httprouter.Params
+func GenerateHandleBodyTesterWithURLParams(
+	t *testing.T,
+	handleFunc http.Handler,
+	loggedIn bool,
+	httpRouterParams httprouter.Params,
+) HandleBodyTester {
+	return func(method string, body io.Reader) *httptest.ResponseRecorder {
+		req, err := http.NewRequest(method, "", body)
 		ok(t, err)
 		req.Header.Set(
 			"Content-Type",

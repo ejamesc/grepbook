@@ -140,7 +140,10 @@ func (a *App) UpdateBookReviewHandler(db grepbook.BookReviewDB) HandlerWithError
 
 		mergeBookReviewDeltas(br, tbr)
 		br.DateTimeUpdated = time.Now()
-		br.Save(db)
+		err = br.Save(db)
+		if err != nil {
+			return newError(http.StatusInternalServerError, "error saving book review", err)
+		}
 
 		apiResp := &APIResponse{Message: "Book review updated successfully"}
 		a.rndr.JSON(w, http.StatusOK, apiResp)

@@ -1,6 +1,7 @@
 package main_test
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -12,7 +13,7 @@ import (
 func TestReadHandler(t *testing.T) {
 	mockDB := &MockBookReviewDB{shouldFail: false}
 	rh := app.Wrap(app.ReadHandler(mockDB))
-	params := httprouter.Params{httprouter.Param{Key: "id", Value: "42"}}
+	params := httprouter.Params{httprouter.Param{Key: "id", Value: "someUUID"}}
 	test := GenerateHandleTesterWithURLParams(t, rh, false, params)
 	w := test("GET", url.Values{})
 
@@ -26,7 +27,7 @@ func TestReadHandler(t *testing.T) {
 func TestWritePageDisplayHandler(t *testing.T) {
 	mockDB := &MockBookReviewDB{shouldFail: false}
 	rh := app.Wrap(app.WritePageDisplayHandler(mockDB))
-	params := httprouter.Params{httprouter.Param{Key: "id", Value: "42"}}
+	params := httprouter.Params{httprouter.Param{Key: "id", Value: "someUUID"}}
 	test := GenerateHandleTesterWithURLParams(t, rh, true, params)
 	w := test("GET", url.Values{})
 
@@ -53,13 +54,36 @@ func TestCreateBookReviewHandler(t *testing.T) {
 
 // Not going to write this test until after the shift has been done.
 func TestUpdateBookReviewHandler(t *testing.T) {
+	mockDB := &MockBookReviewDB{shouldFail: false}
+	updateBookReviewHandler := app.UpdateBookReviewHandler(mockDB)
+	params := httprouter.Params{httprouter.Param{Key: "id", Value: "someUUID"}}
+	test := GenerateHandleBodyTesterWithURLParams(t, app.Wrap(updateBookReviewHandler), true, params)
+	br, _ := mockDB.GetBookReview("someUUID")
 
+	// Successful update
+	jsonString := fmt.Sprintf(`{"uid": "%s"}`, br.UID)
+	w := test("PUT", strings.NewReader(jsonString))
+	equals(t, http.StatusOK, w.Code)
+
+	// User attempts to update a story that does not belong to him
+	w = test("PUT", strings.NewReader(fmt.Sprintf(`{"uid": "someOtherUUID"}`)))
+	equals(t, http.StatusForbidden, w.Code)
+
+	// JSON parsing error happens
+	w = test("PUT", strings.NewReader(fmt.Sprintf(`LOL`)))
+	equals(t, http.StatusInternalServerError, w.Code)
+
+	// User gives nonexistent uuid
+	params = httprouter.Params{httprouter.Param{Key: "id", Value: ""}}
+	test = GenerateHandleBodyTesterWithURLParams(t, app.Wrap(updateBookReviewHandler), true, params)
+	w = test("PUT", strings.NewReader(jsonString))
+	equals(t, http.StatusNotFound, w.Code)
 }
 
 func TestDeleteBookReviewHandler(t *testing.T) {
 	mockDB := &MockBookReviewDB{shouldFail: false}
 	deleteBookHandler := app.Wrap(app.DeleteBookReviewHandler(mockDB))
-	params := httprouter.Params{httprouter.Param{Key: "id", Value: "42"}}
+	params := httprouter.Params{httprouter.Param{Key: "id", Value: "someUUID"}}
 	test := GenerateHandleTesterWithURLParams(t, deleteBookHandler, true, params)
 	w := test("DELETE", url.Values{})
 
