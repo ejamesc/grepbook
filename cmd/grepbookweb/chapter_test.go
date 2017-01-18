@@ -5,14 +5,15 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/ejamesc/grepbook"
 	"github.com/julienschmidt/httprouter"
 )
 
 func TestCreateChapterAPIHandler(t *testing.T) {
 	mockDB := &MockBookReviewDB{shouldFail: false}
-	updateBookReviewHandler := app.CreateChapterAPIHandler(mockDB)
+	createChapterHandler := app.CreateChapterAPIHandler(mockDB)
 	params := httprouter.Params{httprouter.Param{Key: "id", Value: "someUUID"}}
-	test := GenerateHandleBodyTesterWithURLParams(t, app.Wrap(updateBookReviewHandler), true, params)
+	test := GenerateHandleBodyTesterWithURLParams(t, app.Wrap(createChapterHandler), true, params)
 
 	// Successful create
 	jsonString := `{"heading": "Superintelligence"}`
@@ -29,13 +30,49 @@ func TestCreateChapterAPIHandler(t *testing.T) {
 
 	// User gives nonexistent uuid
 	params = httprouter.Params{httprouter.Param{Key: "id", Value: ""}}
-	test = GenerateHandleBodyTesterWithURLParams(t, app.Wrap(updateBookReviewHandler), true, params)
+	test = GenerateHandleBodyTesterWithURLParams(t, app.Wrap(createChapterHandler), true, params)
 	w = test("POST", strings.NewReader(jsonString))
 	equals(t, http.StatusNotFound, w.Code)
 }
 
 func TestUpdateChapterAPIHandler(t *testing.T) {
+	mockDB := &MockBookReviewDB{shouldFail: false}
+	updateChapterHandler := app.UpdateChapterAPIHandler(mockDB)
 
+	br, _ := mockDB.GetBookReview("someid")
+	cp := grepbook.NewChapter("boo", "", "")
+	br.AddChapter(mockDB, cp)
+
+	params := httprouter.Params{
+		httprouter.Param{Key: "id", Value: "someUUID"},
+		httprouter.Param{Key: "cid", Value: cp.ID}}
+	test := GenerateHandleBodyTesterWithURLParams(t, app.Wrap(updateChapterHandler), true, params)
+
+	// Successful Update
+	jsonString := `{"heading": "Superintelligence 2"}`
+	w := test("POST", strings.NewReader(jsonString))
+	equals(t, http.StatusOK, w.Code)
+
+	// Empty but valid json
+	jsonString = `{}`
+	w = test("POST", strings.NewReader(jsonString))
+	equals(t, http.StatusOK, w.Code)
+
+	// User gives nonexistent chapter id
+	params[1] = httprouter.Param{Key: "cid", Value: "blablabla"}
+	test2 := GenerateHandleBodyTesterWithURLParams(t, app.Wrap(updateChapterHandler), true, params)
+	w = test2("POST", strings.NewReader(jsonString))
+	equals(t, http.StatusNotFound, w.Code)
+
+	// Malformed json supplied
+	w = test("POST", strings.NewReader("LOL"))
+	equals(t, http.StatusInternalServerError, w.Code)
+
+	// User gives nonexistent uuid
+	params = httprouter.Params{httprouter.Param{Key: "id", Value: ""}}
+	test = GenerateHandleBodyTesterWithURLParams(t, app.Wrap(updateChapterHandler), true, params)
+	w = test("POST", strings.NewReader(jsonString))
+	equals(t, http.StatusNotFound, w.Code)
 }
 
 func TestReorderChapterAPIHandler(t *testing.T) {

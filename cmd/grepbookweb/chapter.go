@@ -13,25 +13,15 @@ import (
 // TODO: return API errors instead
 func (a *App) CreateChapterAPIHandler(db grepbook.BookReviewDB) HandlerWithError {
 	return func(w http.ResponseWriter, req *http.Request) error {
-		params := GetParamsObj(req)
-		uid := params.ByName("id")
-		br, err := db.GetBookReview(uid)
-		if err != nil {
-			if err == grepbook.ErrNoRows {
-				return newError(http.StatusNotFound, "no book review with that uid found", err)
-			}
-			return newError(http.StatusInternalServerError, "error retrieving book review: ", err)
-		}
-
-		jsonBody, err := ioutil.ReadAll(req.Body)
-		if err != nil {
-			return newError(http.StatusInternalServerError, "error reading request body", err)
+		jsonBody, br, sErr := processChapterReq(req, db)
+		if sErr != nil {
+			return sErr
 		}
 
 		var cpt *struct {
 			Heading string `json:"heading"`
 		}
-		err = json.Unmarshal(jsonBody, &cpt)
+		err := json.Unmarshal(jsonBody, &cpt)
 		if err != nil {
 			return newError(http.StatusInternalServerError, "error unmarshalling jsonBody from update", err)
 		}
@@ -53,6 +43,28 @@ func (a *App) CreateChapterAPIHandler(db grepbook.BookReviewDB) HandlerWithError
 
 func (a *App) UpdateChapterAPIHandler(db grepbook.BookReviewDB) HandlerWithError {
 	return func(w http.ResponseWriter, req *http.Request) error {
+		jsonBody, bookReview, sErr := processChapterReq(req, db)
+		if sErr != nil {
+			return sErr
+		}
+		params := GetParamsObj(req)
+		chapterID := params.ByName("cid")
+
+		var cpd grepbook.ChapterDelta
+		err := json.Unmarshal(jsonBody, &cpd)
+		if err != nil {
+			return new500Error("error unmarshalling jsonBody from update", err)
+		}
+
+		err = bookReview.UpdateChapter(db, chapterID, cpd)
+		if err != nil {
+			if err == grepbook.ErrNoRows {
+				return newError(http.StatusNotFound, fmt.Sprintf("chapter ID %s not found", chapterID), err)
+			}
+			return new500Error("error updating chapter", err)
+		}
+
+		a.rndr.JSON(w, http.StatusOK, &APIResponse{Message: "Chapter updated successfully"})
 		return nil
 	}
 }
@@ -67,4 +79,21 @@ func (a *App) DeleteChapterAPIHandler(db grepbook.BookReviewDB) HandlerWithError
 	return func(w http.ResponseWriter, req *http.Request) error {
 		return nil
 	}
+}
+
+func processChapterReq(req *http.Request, db grepbook.BookReviewDB) (jsonBody []byte, bookReview *grepbook.BookReview, sErr *StatusError) {
+	params := GetParamsObj(req)
+	uid := params.ByName("id")
+	br, err := db.GetBookReview(uid)
+	if err != nil {
+		if err == grepbook.ErrNoRows {
+			return []byte{}, nil, newError(http.StatusNotFound, "no book review with that uid found", err)
+		}
+		return []byte{}, nil, new500Error("error retrieving book review", err)
+	}
+	jb, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return []byte{}, nil, new500Error("error reading request body", err)
+	}
+	return jb, br, nil
 }

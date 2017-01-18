@@ -73,6 +73,10 @@ type ChapterDelta struct {
 // UpdateChapter updates the chapter given.
 func (br *BookReview) UpdateChapter(db BookReviewDB, chapID string, cd ChapterDelta) error {
 	i, cp := br.GetChapter(chapID)
+	if i == -1 {
+		return ErrNoRows
+	}
+
 	if cd.Heading != nil {
 		cp.Heading = *cd.Heading
 	}

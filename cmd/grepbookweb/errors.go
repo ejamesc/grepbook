@@ -33,6 +33,10 @@ func newError(code int, msg string, err error) *StatusError {
 	}
 }
 
+func new500Error(msg string, err error) *StatusError {
+	return newError(500, msg, err)
+}
+
 func newSessionSaveError(err error) *StatusError {
 	return &StatusError{Code: 500, Err: fmt.Errorf("problem saving to cookie store: %s", err)}
 }
