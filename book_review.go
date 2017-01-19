@@ -113,7 +113,7 @@ func (br *BookReview) ReorderChapter(db BookReviewDB, oldIndex, newIndex int) er
 func (br *BookReview) DeleteChapter(db BookReviewDB, chapID string) error {
 	i, _ := br.GetChapter(chapID)
 	if i == -1 {
-		return fmt.Errorf("no such chapter id found")
+		return ErrNoRows
 	}
 
 	copy(br.Chapters[i:], br.Chapters[i+1:])

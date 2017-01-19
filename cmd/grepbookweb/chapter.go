@@ -59,7 +59,7 @@ func (a *App) UpdateChapterAPIHandler(db grepbook.BookReviewDB) HandlerWithError
 		err = bookReview.UpdateChapter(db, chapterID, cpd)
 		if err != nil {
 			if err == grepbook.ErrNoRows {
-				return newError(http.StatusNotFound, fmt.Sprintf("chapter ID %s not found", chapterID), err)
+				return new404Error(fmt.Sprintf("chapter ID %s not found", chapterID), err)
 			}
 			return new500Error("error updating chapter", err)
 		}
@@ -77,6 +77,22 @@ func (a *App) ReorderChapterAPIHandler(db grepbook.BookReviewDB) HandlerWithErro
 
 func (a *App) DeleteChapterAPIHandler(db grepbook.BookReviewDB) HandlerWithError {
 	return func(w http.ResponseWriter, req *http.Request) error {
+		_, bookReview, sErr := processChapterReq(req, db)
+		if sErr != nil {
+			return sErr
+		}
+		params := GetParamsObj(req)
+		chapterID := params.ByName("cid")
+
+		err := bookReview.DeleteChapter(db, chapterID)
+		if err != nil {
+			if err == grepbook.ErrNoRows {
+				return new404Error("no such chapter", err)
+			}
+			return new500Error("error deleting chapter", err)
+		}
+
+		a.rndr.JSON(w, http.StatusOK, &APIResponse{Message: "Chapter deleted successfully"})
 		return nil
 	}
 }
@@ -87,7 +103,7 @@ func processChapterReq(req *http.Request, db grepbook.BookReviewDB) (jsonBody []
 	br, err := db.GetBookReview(uid)
 	if err != nil {
 		if err == grepbook.ErrNoRows {
-			return []byte{}, nil, newError(http.StatusNotFound, "no book review with that uid found", err)
+			return []byte{}, nil, new404Error("no book review with that uid found", err)
 		}
 		return []byte{}, nil, new500Error("error retrieving book review", err)
 	}
