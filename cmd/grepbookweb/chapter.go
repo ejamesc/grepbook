@@ -23,7 +23,7 @@ func (a *App) CreateChapterAPIHandler(db grepbook.BookReviewDB) HandlerWithError
 		}
 		err := json.Unmarshal(jsonBody, &cpt)
 		if err != nil {
-			return newError(http.StatusInternalServerError, "error unmarshalling jsonBody from update", err)
+			return new500Error("error unmarshalling jsonBody from update", err)
 		}
 
 		if strings.TrimSpace(cpt.Heading) == "" {
@@ -71,6 +71,30 @@ func (a *App) UpdateChapterAPIHandler(db grepbook.BookReviewDB) HandlerWithError
 
 func (a *App) ReorderChapterAPIHandler(db grepbook.BookReviewDB) HandlerWithError {
 	return func(w http.ResponseWriter, req *http.Request) error {
+		jsonBody, bookReview, sErr := processChapterReq(req, db)
+		if sErr != nil {
+			return sErr
+		}
+
+		var cpd *struct {
+			OldIndex int `json:"old_index"`
+			NewIndex int `json:"new_index"`
+		}
+		err := json.Unmarshal(jsonBody, &cpd)
+		if err != nil {
+			return new500Error("error unmarshalling jsonBody from reorder", err)
+		}
+
+		if cpd.OldIndex == cpd.NewIndex || cpd.OldIndex <= 0 && cpd.NewIndex <= 0 {
+			return newError(http.StatusBadRequest, "old index and new index cannot both be the same, or < 0", fmt.Errorf("bad indexes"))
+		}
+
+		err = bookReview.ReorderChapter(db, cpd.OldIndex, cpd.NewIndex)
+		if err != nil {
+			return new500Error("error reordering chapter", err)
+		}
+
+		a.rndr.JSON(w, http.StatusOK, &APIResponse{Message: "Chapter reordered successfully"})
 		return nil
 	}
 }
@@ -85,10 +109,7 @@ func (a *App) DeleteChapterAPIHandler(db grepbook.BookReviewDB) HandlerWithError
 		chapterID := params.ByName("cid")
 
 		err := bookReview.DeleteChapter(db, chapterID)
-		if err != nil {
-			if err == grepbook.ErrNoRows {
-				return new404Error("no such chapter", err)
-			}
+		if err != nil && err != grepbook.ErrNoRows {
 			return new500Error("error deleting chapter", err)
 		}
 

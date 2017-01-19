@@ -77,7 +77,54 @@ func TestUpdateChapterAPIHandler(t *testing.T) {
 }
 
 func TestReorderChapterAPIHandler(t *testing.T) {
+	mockDB := &MockBookReviewDB{shouldFail: false}
+	reorderChapterHandler := app.ReorderChapterAPIHandler(mockDB)
+	params := httprouter.Params{httprouter.Param{Key: "id", Value: "someUUID"}}
+	test := GenerateHandleBodyTesterWithURLParams(t, app.Wrap(reorderChapterHandler), true, params)
 
+	br, _ := mockDB.GetBookReview("someid")
+	cp := grepbook.NewChapter("boo", "", "")
+	cp2 := grepbook.NewChapter("blah", "", "")
+	br.AddChapter(mockDB, cp)
+	br.AddChapter(mockDB, cp2)
+
+	// Successful reordering
+	jsonString := `{"old_index": 0, "new_index": 1}`
+	w := test("PUT", strings.NewReader(jsonString))
+	equals(t, http.StatusOK, w.Code)
+
+	br.Chapters = []*grepbook.Chapter{}
+
+	// Nonexistent chapter
+	jsonString = `{"old_index": 0, "new_index": 1}`
+	w = test("PUT", strings.NewReader(jsonString))
+	equals(t, http.StatusInternalServerError, w.Code)
+
+	// Equal index
+	jsonString = `{"old_index": 3, "new_index": 3}`
+	w = test("PUT", strings.NewReader(jsonString))
+	equals(t, http.StatusBadRequest, w.Code)
+
+	// Negative index
+	jsonString = `{"old_index": -3, "new_index": 0}`
+	w = test("PUT", strings.NewReader(jsonString))
+	equals(t, http.StatusBadRequest, w.Code)
+
+	// Empty JSON
+	jsonString = `{}`
+	w = test("PUT", strings.NewReader(jsonString))
+	equals(t, http.StatusBadRequest, w.Code)
+
+	// Malformed JSON
+	jsonString = `LOL`
+	w = test("PUT", strings.NewReader(jsonString))
+	equals(t, http.StatusInternalServerError, w.Code)
+
+	// User gives nonexistent uuid
+	params = httprouter.Params{httprouter.Param{Key: "id", Value: ""}}
+	test = GenerateHandleBodyTesterWithURLParams(t, app.Wrap(reorderChapterHandler), true, params)
+	w = test("PUT", strings.NewReader(jsonString))
+	equals(t, http.StatusNotFound, w.Code)
 }
 
 func TestDeleteChapterAPIHandler(t *testing.T) {
@@ -99,5 +146,5 @@ func TestDeleteChapterAPIHandler(t *testing.T) {
 	params[1] = httprouter.Param{Key: "cid", Value: "blablabla"}
 	test = GenerateHandleTesterWithURLParams(t, deleteChapterHandler, true, params)
 	w = test("DELETE", url.Values{})
-	equals(t, http.StatusNotFound, w.Code)
+	equals(t, http.StatusOK, w.Code)
 }
