@@ -72,7 +72,7 @@ func (db *DB) UpdateUser(userEmail string, ud UserDelta) (*User, error) {
 	if password != "" {
 		hashedP, err := bcrypt.GenerateFromPassword([]byte(password), workFactor)
 		if err != nil {
-			return nil, fmt.Errorf("error generating bcrypt hash: ", err)
+			return nil, fmt.Errorf("error generating bcrypt hash: %s", err)
 		}
 		user.Password = string(hashedP)
 	}
