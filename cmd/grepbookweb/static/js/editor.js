@@ -1,64 +1,85 @@
 var Delta = Quill.import('delta');
-var quill = new Quill('#editor', {
+var quill = new Quill('#summary-placeholder', {
   placeholder: 'Start your summary ...',
   theme: 'snow'
 });
 
-var brJSON = document.querySelector('#data-bookreview').dataset.bookreviewjson;
-var brm = BookSummaryModel(brJSON);
+var EditorViewModel = (function() {
+  var evm = {};
+  var brJSON = document.querySelector('#data-bookreview').dataset.bookreviewjson;
+  var _brm = BookSummaryModel(brJSON);
 
-var change = new Delta();
-quill.on('text-change', function(delta, source) {
-  change = change.compose(delta);
-});
+  evm.change = new Delta();
+  evm.deleter = _brm.deleter;
 
-var saveText = function() {
-  brm.overviewHTML(document.querySelector(".ql-editor").innerHTML);
-  brm.delta(JSON.stringify(quill.getContents()));
-  brm.save();
-};
-
-setInterval(function() {
-  if (change.length() > 0) {
-    // do the save
-    change = new Delta();
-    saveText();
+  // TODO: update the way the html contents are taken?
+  function _getText() {
+    _brm.overviewHTML(document.querySelector(".ql-editor").innerHTML);
+    _brm.delta(JSON.stringify(quill.getContents()));
+    evm.change = new Delta(); // we clear it here so we can reuse this in saver+deleter
   }
-}, 5*1000);
 
-window.onbeforeunload = function() {
-  if (change.length() > 0) {
+  evm.save = function() {
+    _getText();
+    _brm.save();
+  };
+
+  evm.saver = function() {
+    _getText();
+    return _brm.saver();
+  };
+
+  evm.updateDelta = function(delta, source) {
+    evm.change = evm.change.compose(delta);
+  };
+
+  evm.openPopup = function() {
+    BookSummaryDetailsPopupViewModel.openPopup(_brm);
+  };
+
+  evm.updateOngoing = function(ongoing) {
+    _brm.isOngoing(ongoing);
+    evm.save();
+  };
+
+  setInterval(function() {
+    if (evm.change.length() > 0) {
+      evm.save();
+    }
+  }, 5*1000);
+
+  window.onbeforeunload = function() {
+  if (evm.change.length() > 0) {
     return 'There are unsaved changes. Are you sure you want to leave?';
   }
 };
 
-document.getElementById("edit-review-button").onclick = function() {
-  BookSummaryDetailsPopupViewModel.openPopup(brm);
-};
+  return evm;
+})();
+
+quill.on('text-change', EditorViewModel.updateDelta);
+
+document.getElementById("edit-review-button").onclick = EditorViewModel.openPopup;
 
 document.getElementById("save-button").onclick = function() {
-  brm.overviewHTML(document.querySelector(".ql-editor").innerHTML);
-  brm.delta(JSON.stringify(quill.getContents()));
-  change = new Delta();
-  brm.saver().then(function(r) {
+  EditorViewModel.saver().then(function(r) {
     window.location = "/";
   });
 };
 
 document.getElementById("delete-button").onclick = function() {
   if (confirm("Are you sure you want to delete this review?")) {
-    brm.deleter().then(function(r) {
+    EditorViewModel.deleter().then(function(r) {
       window.location = "/";
     });
   }
 };
 
 document.getElementById("ongoing-switch").onclick = function() {
-  brm.isOngoing(this.checked);
   if (this.checked) { 
     document.getElementById("ongoing-label").style.display = "block";
   } else {
     document.getElementById("ongoing-label").style.display = "none";
   }
-  brm.save();
+  EditorViewModel.updateOngoing(this.checked);
 };

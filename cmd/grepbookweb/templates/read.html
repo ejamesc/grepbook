@@ -8,8 +8,8 @@
   <div class='small-12 medium-10 medium-offset-1 columns'>
     <h2>{{ .BookReview.Title }}</h2>
     <h5 class='summary-subheader'>by {{ .BookReview.BookAuthor }} &middot; {{ .BookReview.DateTimeCreated | datefmt }} {{ if .BookReview.BookURL }}&middot; <a href='{{ .BookReview.BookURL }}'>Buy from Amazon</a>{{ end }}</h5>
-    {{ if .BookReview.IsOngoing }}<span class='label success label-right'>Ongoing</span>{{ end }}
     {{ if .User }}<span class='label secondary label-right'><a href="/summaries/{{ .BookReview.UID }}/edit"><i class='fa fa-pencil'></i> Edit</a></span>{{ end }}
+    {{ if .BookReview.IsOngoing }}<span class='label success label-right'>Ongoing</span>{{ end }}
     <hr/>
   </div>
 </div>

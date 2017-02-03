@@ -15,15 +15,15 @@
   <div class='small-12 medium-10 medium-offset-1 columns'>
     <h2>{{ .BookReview.Title }}</h2>
     <h5 class='summary-subheader'>by {{ .BookReview.BookAuthor }} &middot; {{ .BookReview.DateTimeCreated | datefmt }} {{ if .BookReview.BookURL }}&middot; <a href='{{ .BookReview.BookURL }}'>Buy from Amazon</a>{{ end }} {{ if .User }}&middot; <a class='black-link' id='edit-review-button' href="javascript:void(0)"><i class='fa fa-pencil'></i></a>{{ end }}</h5>
-    <span id='ongoing-label' class='label success label-right' {{ if not .BookReview.IsOngoing }}style="display: none;"{{ end }}>Ongoing</span>
     <span class='label secondary label-right'><a href='/summaries/{{ .BookReview.UID }}'><i class='fa fa-rocket'></i> View</a></span>
+    <span id='ongoing-label' class='label success label-right' {{ if not .BookReview.IsOngoing }}style="display: none;"{{ end }}>Ongoing</span>
     <hr/>
   </div>
 </div>
 <div class='row'>
   <div class='small-12 medium-10 medium-offset-1 columns'>
     <h3>Overall Book Summary</h3>
-    <div id='editor'>
+    <div id='summary-placeholder'>
       {{ .BRHTML }}
     </div>
   </div>
