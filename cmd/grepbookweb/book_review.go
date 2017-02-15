@@ -37,7 +37,7 @@ func (a *App) ReadHandler(db grepbook.BookReviewDB) HandlerWithError {
 			BookReview:     br,
 			BRHTML:         template.HTML(br.OverviewHTML),
 			IsNew:          isNew,
-			localPresenter: &localPresenter{PageTitle: "Summary template", PageURL: "/summary", globalPresenter: a.gp, User: user},
+			localPresenter: &localPresenter{PageTitle: "Summary of " + br.Title, PageURL: "/summary", globalPresenter: a.gp, User: user},
 		}
 
 		err = a.rndr.HTML(w, http.StatusOK, "read", pp)
@@ -74,7 +74,7 @@ func (a *App) WritePageDisplayHandler(db grepbook.BookReviewDB) HandlerWithError
 			BookReview:     br,
 			BRHTML:         template.HTML(br.OverviewHTML),
 			IsNew:          isNew,
-			localPresenter: &localPresenter{PageTitle: "Summary template", PageURL: "/summary", globalPresenter: a.gp, User: user},
+			localPresenter: &localPresenter{PageTitle: "Summary of " + br.Title, PageURL: "/summary", globalPresenter: a.gp, User: user},
 		}
 
 		brjson, err := json.Marshal(br)

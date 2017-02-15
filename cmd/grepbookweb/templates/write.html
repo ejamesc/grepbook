@@ -15,59 +15,58 @@
   <div class='small-12 medium-10 medium-offset-1 columns'>
     <h2>{{ .BookReview.Title }}</h2>
     <h5 class='summary-subheader'>by {{ .BookReview.BookAuthor }} &middot; {{ .BookReview.DateTimeCreated | datefmt }} {{ if .BookReview.BookURL }}&middot; <a href='{{ .BookReview.BookURL }}'>Buy from Amazon</a>{{ end }} {{ if .User }}&middot; <a class='black-link' id='edit-review-button' href="javascript:void(0)"><i class='fa fa-pencil'></i></a>{{ end }}</h5>
-    <span class='label secondary label-right'><a href='/summaries/{{ .BookReview.UID }}'><i class='fa fa-rocket'></i> View</a></span>
+    <span class='label secondary label-right'><a href='/summaries/{{ .BookReview.UID }}'><i class='fa fa-rocket'></i> View &rarr;</a></span>
     <span id='ongoing-label' class='label success label-right' {{ if not .BookReview.IsOngoing }}style="display: none;"{{ end }}>Ongoing</span>
     <hr/>
   </div>
 </div>
-<div class='row'>
-  <div class='small-12 medium-10 medium-offset-1 columns'>
-    <h3>Overall Book Summary</h3>
-    <div id='summary-placeholder'>
+<div id='summary-placeholder'>
+  <div class='row'>
+    <div class='small-12 medium-10 medium-offset-1 columns'>
+      <h3>Overall Book Summary</h3>
       {{ .BRHTML }}
     </div>
   </div>
-</div>
-<div class='row'>
-  <div class='small-12 medium-10 medium-offset-1 columns'>
-    <br/>
-    <h3>Chapter Summaries</h3>
-    <div id='chapters-placeholder'>
-      {{ range .BookReview.Chapters }}
-      <div class='chapter-summary'>
-        <h4 class='draggable'><span class='grey-draggable'><i class='fa fa-ellipsis-v'></i></span> {{ .Heading }}</h4>
-        {{ .HTML }}
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-        <a class='button primary small'><i class='fa fa-save'></i> Save</a>
-        <a class='button secondary small'><i class='fa fa-trash'></i></a>
+  <div class='row'>
+    <div class='small-12 medium-10 medium-offset-1 columns'>
+      <br/>
+      <h3>Chapters</h3>
+      <div id='chapters-placeholder'>
+        {{ range .BookReview.Chapters }}
+        <div class='chapter-summary'>
+          <h4 class='draggable'><span class='grey-draggable'><i class='fa fa-ellipsis-v'></i></span> {{ .Heading }}</h4>
+          {{ .HTML }}
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+          <a class='button primary small'><i class='fa fa-save'></i> Save</a>
+          <a class='button secondary small'><i class='fa fa-trash'></i></a>
+        </div>
+        {{ end }}
       </div>
-      {{ end }}
     </div>
   </div>
- </div>
- <div class='row'>
-  <div class='small-12 medium-10 medium-offset-1 end columns'>
-    <hr/>
-  </div>
- </div>
-<div class='row'>
-  <div class='small-12 medium-8 medium-offset-1 columns'>
-    <br/>
-    <input class='button success' type="submit" value="Save" id="save-button"/>    
-    <button class='button alert' id="delete-button">Delete</button>
-  </div>
-  <div class='small-12 medium-2 columns end text-right'>
-    <label><em>Ongoing?</em></label>
-    <div class="switch">
-      <input class="switch-input" id="ongoing-switch" type="checkbox" name="isOngoing" {{ if .BookReview.IsOngoing }}checked{{ end }}>
-      <label class="switch-paddle" for="ongoing-switch">
-        <span class="show-for-sr">Ongoing?</span>
-        <span class="switch-active" aria-hidden="true">Yes</span>
-        <span class="switch-inactive" aria-hidden="true">No</span>
-      </label>
+  <div class='row'>
+    <div class='small-12 medium-10 medium-offset-1 end columns'>
+      <hr/>
     </div>
   </div>
-</div>
+  <div class='row'>
+    <div class='small-12 medium-8 medium-offset-1 columns'>
+      <br/>
+      <input class='button success' type="submit" value="Save" id="save-button"/>    
+      <button class='button alert' id="delete-button">Delete</button>
+    </div>
+    <div class='small-12 medium-2 columns end text-right'>
+      <label><em>Ongoing?</em></label>
+      <div class="switch">
+        <input class="switch-input" id="ongoing-switch" type="checkbox" name="isOngoing" {{ if .BookReview.IsOngoing }}checked{{ end }}>
+        <label class="switch-paddle" for="ongoing-switch">
+          <span class="show-for-sr">Ongoing?</span>
+          <span class="switch-active" aria-hidden="true">Yes</span>
+          <span class="switch-inactive" aria-hidden="true">No</span>
+        </label>
+      </div>
+    </div>
+  </div>
 </div>
 <div id='data-bookreview' data-bookreviewjson='{{ .BRJSON }}'></div>
 

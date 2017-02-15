@@ -95,15 +95,13 @@ nav.header-actions ul li {
 
 .chapter-summary {
   cursor: pointer;
-}
-
-.draggable {
-  cursor: move;
+  margin-bottom: 1rem;
 }
 
 .grey-draggable {
   font-size: 80%;
   color: #aaa;
+  cursor: move;
 }
 
 /* INDEX PAGE */
