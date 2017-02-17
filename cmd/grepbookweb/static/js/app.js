@@ -11,7 +11,9 @@ var BookSummaryModel = function(json) {
   brm.overviewHTML = m.prop(br.html || "");
   brm.delta = m.prop(br.delta || "");
   brm.isOngoing = m.prop(br.is_ongoing || false);
-  brm.chapters = m.prop(br.chapters || []);
+  var chaps = br.chapters.map(function(c) { return ChapterModel(c, brm.uid()); });
+  console.log(chaps);
+  brm.chapters = m.prop(chaps || []);
 
   brm._json = function() {
     return {
@@ -59,6 +61,39 @@ var BookSummaryModel = function(json) {
   };
 
   return brm;
+};
+
+var ChapterModel = function(chap, brID) {
+  var cm = {};
+  cm.id = m.prop(chap.id || "");
+  cm.heading = m.prop(chap.heading || "");
+  cm.html = m.prop(chap.html || "");
+  cm.delta = m.prop(chap.delta || "");
+
+  cm._json = function() {
+    return {
+      heading: cm.heading(),
+      html: cm.html(),
+      delta: cm.delta(),
+    };
+  };
+
+  cm.save = function() {
+    m.request({
+      method: 'PUT',
+      url: '/summaries/' + brID + '/chapters/' + c.id(),
+      data: cm._json()
+    });
+  };
+
+  cm.delete = function() {
+    m.request({
+      method: 'DELETE',
+      url: '/summaries/' + brID + '/chapters/' + c.id(),
+    });
+  };
+
+  return cm;
 };
 
 var BookSummaryDetailsPopupViewModel = (function() {

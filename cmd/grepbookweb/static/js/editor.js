@@ -4,19 +4,21 @@ var EditorViewModel = (function() {
   var evm = {};
   var brJSON = document.querySelector('#data-bookreview').dataset.bookreviewjson;
   var _brm = BookSummaryModel(brJSON);
+  var _editorEl = null;
   var quill = null;
 
   evm.change = new Delta();
   evm.deleter = _brm.deleter;
+  evm.html = _brm.overviewHTML;
+  evm.chapters = _brm.chapters;
 
   // TODO: update the way the html contents are taken?
   function _getText() {
-    _brm.overviewHTML(document.querySelector(".ql-editor").innerHTML);
+    _brm.overviewHTML(_editorEl.innerHTML);
+    console.log(_brm.overviewHTML());
     _brm.delta(JSON.stringify(quill.getContents()));
     evm.change = new Delta(); // we clear it here so we can reuse this in saver+deleter
   }
-
-  evm.chapters = _brm.chapters;
 
   evm.save = function() {
     _getText();
@@ -75,6 +77,7 @@ var EditorViewModel = (function() {
         theme: 'snow'
       });
       quill.on('text-change', evm.updateDelta);
+      _editorEl = el.querySelector(".ql-editor");
     }
   };
 
@@ -105,7 +108,7 @@ var Editor = {
         m(".small-12.medium-10.medium-offset-1.columns",
           [
             m("h3", "Overall Book Summary"),
-            m("#editor", {config: vm.setup}),
+            m("#editor", {config: vm.setup}, m.trust(vm.html())),
           ]
         )),
       m(".row",
@@ -152,6 +155,10 @@ var ChapterEditor = {
     console.log(chap);
     var vm = {};
     vm.editorShown = m.prop(false);
+    vm.delta = new Delta();
+    
+    vm._editor = null;
+    vm._editorEl = null;
     vm._chap = chap;
 
     vm.toggleEditor = function() {
@@ -162,19 +169,26 @@ var ChapterEditor = {
 
     vm.config = function(el, init) {
       if (!init) {
-        quill = new Quill(el, {
+        vm._editor = new Quill(el, {
           placeholder: 'Write your chapter summary ...',
           theme: 'snow'
         });
-        quill.on('text-change', vm.updateDelta);
+        vm._editor.on('text-change', vm.updateDelta);
+        vm._editorEl = el.querySelector(".ql-editor");
       }
     };
 
+    vm.getText = function() {
+      return vm.editorEl.innerHTML;
+    };
+
+    // TODO implement this and add the interval saver
     vm.updateDelta = function() {
       console.log('update delta happening!');
     };
 
     function cleanupToolbar(el) {
+      vm._editor = null;
       if (el === null) return;
       var pr = el.parentNode.parentNode;
       var tb = el.parentNode.parentNode.querySelector(".ql-toolbar");
@@ -189,9 +203,9 @@ var ChapterEditor = {
       m("h4.draggable",
         m("span.grey-draggable",
           [m("i.fa.fa-ellipsis-v"), m.trust("&nbsp;&nbsp;")]), 
-          m("span", {onclick: vm.toggleEditor}, vm._chap.heading)),
-          [(vm.editorShown()) ? m("div", {config: vm.config, id: vm._chap.id}, m.trust(vm._chap.html)) : m.trust(vm._chap.html)]
-      ]);
+          m("span", {onclick: vm.toggleEditor}, vm._chap.heading())),
+          [(vm.editorShown()) ? m("div", {config: vm.config, id: vm._chap.id}, m.trust(vm._chap.html())) : m.trust(vm._chap.html())]
+      ]); // TODO: add the buttons
   }
 };
 
