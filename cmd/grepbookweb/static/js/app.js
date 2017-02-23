@@ -11,9 +11,10 @@ var BookSummaryModel = function(json) {
   brm.overviewHTML = m.prop(br.html || "");
   brm.delta = m.prop(br.delta || "");
   brm.isOngoing = m.prop(br.is_ongoing || false);
-  var chaps = br.chapters.map(function(c) { return ChapterModel(c, brm.uid()); });
-  console.log(chaps);
-  brm.chapters = m.prop(chaps || []);
+  brm._chapters = [];
+  if (br.chapters) {
+    brm._chapters = br.chapters.map(function(c) { return ChapterModel(c, brm); });
+  }
 
   brm._json = function() {
     return {
@@ -24,7 +25,7 @@ var BookSummaryModel = function(json) {
       html: brm.overviewHTML(),
       delta: brm.delta(),
       is_ongoing: brm.isOngoing(),
-      chapters: brm.chapters(),
+      chapters: brm._chapters,
     };
   };
 
@@ -52,7 +53,7 @@ var BookSummaryModel = function(json) {
   brm.deleter = _deleter;
 
   brm.chapterList = function() {
-    var res = ""; var chapters = brm.chapters();
+    var res = ""; var chapters = brm._chapters;
     for (var i = 0; i < chapters.length; i++) {
       res += chapters[i].heading;
       if (i < chapters.length-1) { res += ", "; }
@@ -60,10 +61,14 @@ var BookSummaryModel = function(json) {
     return res;
   };
 
+  brm.deleteChapter = function(chap) {
+    brm._chapters.splice(brm._chapters.indexOf(chap), 1);
+  };
+
   return brm;
 };
 
-var ChapterModel = function(chap, brID) {
+var ChapterModel = function(chap, brm) {
   var cm = {};
   cm.id = m.prop(chap.id || "");
   cm.heading = m.prop(chap.heading || "");
@@ -81,7 +86,7 @@ var ChapterModel = function(chap, brID) {
   cm.save = function() {
     m.request({
       method: 'PUT',
-      url: '/summaries/' + brID + '/chapters/' + c.id(),
+      url: '/summaries/' + brm.uid() + '/chapters/' + cm.id(),
       data: cm._json()
     });
   };
@@ -89,7 +94,9 @@ var ChapterModel = function(chap, brID) {
   cm.delete = function() {
     m.request({
       method: 'DELETE',
-      url: '/summaries/' + brID + '/chapters/' + c.id(),
+      url: '/summaries/' + brm.uid() + '/chapters/' + cm.id(),
+    }).then(function() {
+      brm.deleteChapter(cm);
     });
   };
 

@@ -10,12 +10,11 @@ var EditorViewModel = (function() {
   evm.change = new Delta();
   evm.deleter = _brm.deleter;
   evm.html = _brm.overviewHTML;
-  evm.chapters = _brm.chapters;
+  evm.chapters = _brm._chapters;
 
   // TODO: update the way the html contents are taken?
   function _getText() {
     _brm.overviewHTML(_editorEl.innerHTML);
-    console.log(_brm.overviewHTML());
     _brm.delta(JSON.stringify(quill.getContents()));
     evm.change = new Delta(); // we clear it here so we can reuse this in saver+deleter
   }
@@ -107,23 +106,18 @@ var Editor = {
       m(".row", 
         m(".small-12.medium-10.medium-offset-1.columns",
           [
-            m("h3", "Overall Book Summary"),
+            m("h2", "Overall Book Summary"),
             m("#editor", {config: vm.setup}, m.trust(vm.html())),
           ]
         )),
       m(".row",
-        m(".small-12.medium-10.medium-offset-1.columns",
-          (function(){
-            var a = [
+        m(".small-12.medium-10.medium-offset-1.columns", [
               m("br"),
-              m("h3", "Chapters"),
-            ];
-            a.push(vm.chapters().map(function(chap, index) {
-              return m.component(ChapterEditor, chap);
-            }));
-            return a;
-          })()
-        )),
+              m("h2", "Chapters"),
+              vm.chapters.map(function(chap, index) {
+                return m("div", {key: chap.id()}, m.component(ChapterEditor, chap));
+              })
+        ])),
       m(".row",
         m(".small-12.medium-10.medium-offset-1.columns", m("hr"))),
       m(".row", [
@@ -152,7 +146,6 @@ var Editor = {
 
 var ChapterEditor = {
   controller: function(chap) {
-    console.log(chap);
     var vm = {};
     vm.editorShown = m.prop(false);
     vm.delta = new Delta();
@@ -163,7 +156,7 @@ var ChapterEditor = {
 
     vm.toggleEditor = function() {
       vm.editorShown(!vm.editorShown());
-      if (!vm.editorShown()) { cleanupToolbar(this); }
+      if (!vm.editorShown()) { cleanupToolbar(); }
       m.redraw();
     };
 
@@ -179,33 +172,56 @@ var ChapterEditor = {
     };
 
     vm.getText = function() {
-      return vm.editorEl.innerHTML;
+      return vm._editorEl.innerHTML;
     };
 
-    // TODO implement this and add the interval saver
-    vm.updateDelta = function() {
-      console.log('update delta happening!');
+    vm.getDelta = function() {
+      return JSON.stringify(vm._editor.getContents());
     };
 
-    function cleanupToolbar(el) {
+    vm.updateDelta = function(delta, source) {
+      vm.change = vm.delta.compose(delta);
+    };
+
+    vm.delete = function() {
+      vm._chap.delete();
+    };
+
+    vm.onSaveClick = function() {
+      vm._chap.html(vm.getText());
+      vm._chap.delta(vm.getDelta());
+      vm._chap.save();
+      vm.toggleEditor();
+    };
+
+    vm.onDeleteClick = function() {
+      vm._chap.delete();
+      vm.toggleEditor();
+      m.redraw();
+    };
+
+    function cleanupToolbar() {
       vm._editor = null;
-      if (el === null) return;
-      var pr = el.parentNode.parentNode;
-      var tb = el.parentNode.parentNode.querySelector(".ql-toolbar");
-      if (tb === null) return;
+      var pr = vm._editorEl.parentNode.parentNode;
+      var tb = pr.querySelector(".ql-toolbar");
       pr.removeChild(tb);
+      vm._editorEl = null;
     }
 
     return vm;
   },
   view: function(vm) {
     return m(".chapter-summary", [
-      m("h4.draggable",
+      m("h3.draggable", {onclick: vm.toggleEditor}, 
         m("span.grey-draggable",
           [m("i.fa.fa-ellipsis-v"), m.trust("&nbsp;&nbsp;")]), 
-          m("span", {onclick: vm.toggleEditor}, vm._chap.heading())),
-          [(vm.editorShown()) ? m("div", {config: vm.config, id: vm._chap.id}, m.trust(vm._chap.html())) : m.trust(vm._chap.html())]
-      ]); // TODO: add the buttons
+          m("span", vm._chap.heading())),
+          [(vm.editorShown()) ? m("div", {config: vm.config, id: vm._chap.id()}, m.trust(vm._chap.html())) : m("span", {onclick: vm.toggleEditor}, m.trust(vm._chap.html()))],
+      (vm.editorShown()) ? m(".chapter-footer", [
+        m("a.button.primary.small", {onclick: vm.onSaveClick}, m("i.fa.fa-save"), " Save"),
+        m.trust("&nbsp;"),
+        m("a.button.secondary.small", {onclick: vm.onDeleteClick}, m("i.fa.fa-trash"))]): null,
+      ]); 
   }
 };
 

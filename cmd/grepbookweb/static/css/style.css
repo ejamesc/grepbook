@@ -95,7 +95,11 @@ nav.header-actions ul li {
 
 .chapter-summary {
   cursor: pointer;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.chapter-footer {
+  margin-top: 0.5rem;
 }
 
 .grey-draggable {
