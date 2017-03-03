@@ -20,6 +20,14 @@
     {{ else }}
       <p><em>This book summary hasn't been written yet. Such possibilities await!</em></p>
     {{ end }}
+    <hr/>
+    {{ range .BookReview.Chapters }}
+      <div class='chapter-summary'>
+        <a name="{{ .ID }}"></a><h3>{{ .Heading }}</h3>
+        {{ .TemplateHTML }}
+      </div>
+    {{ end }}
+    
   </div>
   <div class='small-12 medium-2 end columns'>
     <h4>Chapters</h4>

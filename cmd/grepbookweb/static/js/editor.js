@@ -71,6 +71,7 @@ var EditorViewModel = (function() {
 
   evm.setup = function(el, init) {
     if (!init) {
+      el.innerHTML = evm.html();
       quill = new Quill(el, {
         placeholder: 'Start your summary ...',
         theme: 'snow'
@@ -107,7 +108,7 @@ var Editor = {
         m(".small-12.medium-10.medium-offset-1.columns",
           [
             m("h2", "Overall Book Summary"),
-            m("#editor", {config: vm.setup}, m.trust(vm.html())),
+            m("#editor", {config: vm.setup}),
           ]
         )),
       m(".row",

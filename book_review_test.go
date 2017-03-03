@@ -2,6 +2,7 @@ package grepbook_test
 
 import (
 	"fmt"
+	"html/template"
 	"sort"
 	"testing"
 	"time"
@@ -34,6 +35,7 @@ func TestCreateBookReview(t *testing.T) {
 		assert(t, chap.Heading != "", "expect chapter headings to not be empty")
 		assert(t, chap.HTML == "", "expect chapter html to be empty")
 		assert(t, chap.Delta == "", "expect chapter delta to be empty")
+		assert(t, chap.TemplateHTML() == template.HTML(chap.HTML), "expect template html to return a template.HTML object")
 	}
 }
 

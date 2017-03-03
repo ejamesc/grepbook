@@ -55,7 +55,7 @@ var BookSummaryModel = function(json) {
   brm.chapterList = function() {
     var res = ""; var chapters = brm._chapters;
     for (var i = 0; i < chapters.length; i++) {
-      res += chapters[i].heading;
+      res += chapters[i].heading();
       if (i < chapters.length-1) { res += ", "; }
     }
     return res;

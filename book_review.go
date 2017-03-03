@@ -3,6 +3,7 @@ package grepbook
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"sort"
 	"strings"
 	"time"
@@ -139,6 +140,10 @@ type Chapter struct {
 	Heading string `json:"heading"`
 	HTML    string `json:"html"`
 	Delta   string `json:"delta"`
+}
+
+func (c *Chapter) TemplateHTML() template.HTML {
+	return template.HTML(c.HTML)
 }
 
 // CreateChapter takes an input string of chapter headings separated by commas,
