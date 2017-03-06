@@ -1,5 +1,6 @@
 {{ define "header-write" }}
   <link rel="stylesheet" href="/static/css/vendor/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/static/css/dragula.min.css">
   {{ if .User }}
     <link href='/static/css/quill.snow.css' type='text/css' rel='stylesheet' />
   {{ end }}
@@ -7,6 +8,7 @@
 {{ define "scripts-write" }}
   {{ if .User }}
     <script type="text/javascript" src="/static/js/vendor/quill.min.js"></script>
+    <script type="text/javascript" src="/static/js/vendor/dragula.min.js"></script>
     <script type="text/javascript" src="/static/js/editor.js"></script>
   {{ end }}
 {{ end }}
@@ -27,7 +29,7 @@
       {{ .BRHTML }}
     </div>
   </div>
-  <div class='row'>
+  <div class='row draggable'>
     <div class='small-12 medium-10 medium-offset-1 columns'>
       <br/>
       <h2>Chapters</h2>
@@ -36,9 +38,6 @@
         <div class='chapter-summary'>
           <h3 class='draggable'><span class='grey-draggable'><i class='fa fa-ellipsis-v'></i></span> {{ .Heading }}</h3>
           {{ .HTML }}
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-          <a class='button primary small'><i class='fa fa-save'></i> Save</a>
-          <a class='button secondary small'><i class='fa fa-trash'></i></a>
         </div>
         {{ end }}
       </div>

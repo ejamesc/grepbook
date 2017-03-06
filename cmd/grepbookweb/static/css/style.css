@@ -94,8 +94,11 @@ nav.header-actions ul li {
 }
 
 .chapter-summary {
-  cursor: pointer;
   margin-bottom: 0.8rem;
+}
+
+.editable {
+  cursor: pointer;
 }
 
 .chapter-footer {
@@ -103,8 +106,12 @@ nav.header-actions ul li {
 }
 
 .grey-draggable {
-  font-size: 80%;
   color: #aaa;
+  cursor: move;
+}
+
+.handle {
+  font-size: 80%;
   cursor: move;
 }
 

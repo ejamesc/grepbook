@@ -70,17 +70,45 @@ var EditorViewModel = (function() {
   };
 
   evm.setup = function(el, init) {
-    if (!init) {
-      el.innerHTML = evm.html();
-      quill = new Quill(el, {
-        placeholder: 'Start your summary ...',
-        theme: 'snow'
-      });
-      quill.on('text-change', evm.updateDelta);
-      _editorEl = el.querySelector(".ql-editor");
-    }
+    if (init) return;
+
+    el.innerHTML = evm.html();
+    quill = new Quill(el, {
+      placeholder: 'Start your summary ...',
+      theme: 'snow'
+    });
+    quill.on('text-change', evm.updateDelta);
+    _editorEl = el.querySelector(".ql-editor");
   };
 
+  function getIndexOf(arr, el) {
+    if (el === null) return -1;
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i].dataset.uid === el.dataset.uid) return i;
+    }
+    return -1;
+  }
+
+  function getModelPosition(id) {
+    return _brm._chapters.map(function(c) { return c.id(); }).indexOf(id);
+  }
+
+  evm.dragConfig = function(el, init) {
+    if (init) return;
+    var drake = dragula([el], {
+      invalid: function(el, handle) {
+        return handle.className.indexOf("draggable") == -1;
+      },
+    });
+
+    drake.on("drop", function(el, target, source, sibling) {
+      var fromIndex = getModelPosition(el.dataset.uid);
+      var toIndex = getIndexOf(target.childNodes, el);
+      _brm.reorderChapter(fromIndex, toIndex);
+    });
+  };
+
+  // Autosave
   setInterval(function() {
     if (evm.change.length() > 0) {
       evm.save();
@@ -114,10 +142,14 @@ var Editor = {
       m(".row",
         m(".small-12.medium-10.medium-offset-1.columns", [
               m("br"),
-              m("h2", "Chapters"),
-              vm.chapters.map(function(chap, index) {
-                return m("div", {key: chap.id()}, m.component(ChapterEditor, chap));
-              })
+              m("h2", "Chapters"), 
+              m(".sortable", {config: vm.dragConfig},
+                vm.chapters.map(function(chap, index) {
+                  return m("div", {
+                    "data-uid": chap.id(),
+                    key: chap.id(),
+                    }, m.component(ChapterEditor, chap));
+              }))
         ])),
       m(".row",
         m(".small-12.medium-10.medium-offset-1.columns", m("hr"))),
@@ -212,10 +244,10 @@ var ChapterEditor = {
     return vm;
   },
   view: function(vm) {
-    return m(".chapter-summary", [
+    return m(".chapter-summary.editable", [
       m("h3.draggable", {onclick: vm.toggleEditor}, 
-        m("span.grey-draggable",
-          [m("i.fa.fa-ellipsis-v"), m.trust("&nbsp;&nbsp;")]), 
+        m("span.draggable.handle",
+          [m("i.fa.fa-ellipsis-v.grey-draggable.draggable"), m.trust("&nbsp;&nbsp;")]), 
           m("span", vm._chap.heading())),
           [(vm.editorShown()) ? m("div", {config: vm.config, id: vm._chap.id()}, m.trust(vm._chap.html())) : m("span", {onclick: vm.toggleEditor}, m.trust(vm._chap.html()))],
       (vm.editorShown()) ? m(".chapter-footer", [

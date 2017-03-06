@@ -62,7 +62,27 @@ var BookSummaryModel = function(json) {
   };
 
   brm.deleteChapter = function(chap) {
-    brm._chapters.splice(brm._chapters.indexOf(chap), 1);
+    m.request({
+      method: 'DELETE',
+      url: '/summaries/' + brm.uid() + '/chapters/' + chap.id(),
+    }).then(function() {
+      brm._chapters.splice(brm._chapters.indexOf(chap), 1);
+    });
+  };
+
+  brm.reorderChapter = function(fromIndex, toIndex) {
+    if (fromIndex === toIndex) return;
+    var chap = brm._chapters[fromIndex];
+    m.request({
+      method: "PUT",
+      url: "/summaries/" + brm.uid() + "/chapters/",
+      data: {old_index: fromIndex, new_index: toIndex}
+    }).then(function() {
+      brm._chapters.splice(fromIndex, 1);
+      brm._chapters.splice(toIndex, 0, chap);
+    }, function(err) {
+      console.error(err);
+    });
   };
 
   return brm;
@@ -92,12 +112,7 @@ var ChapterModel = function(chap, brm) {
   };
 
   cm.delete = function() {
-    m.request({
-      method: 'DELETE',
-      url: '/summaries/' + brm.uid() + '/chapters/' + cm.id(),
-    }).then(function() {
       brm.deleteChapter(cm);
-    });
   };
 
   return cm;
