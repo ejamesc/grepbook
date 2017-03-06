@@ -115,6 +115,10 @@ nav.header-actions ul li {
   cursor: move;
 }
 
+.create-chapter-widget {
+  margin-bottom: 10px;
+}
+
 /* INDEX PAGE */
 .date-block { 
   padding-top: 10px;

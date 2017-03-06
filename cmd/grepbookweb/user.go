@@ -85,6 +85,10 @@ func (a *App) UserEditHandler(db grepbook.UserDB) HandlerWithError {
 			return err
 		}
 
+		if userDelta.Name != "" {
+			a.gp.Username = userDelta.Name
+		}
+
 		http.Redirect(w, req, reloginTarget, 302)
 		return nil
 	}

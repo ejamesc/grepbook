@@ -85,6 +85,10 @@ var BookSummaryModel = function(json) {
     });
   };
 
+  brm.prependChapter = function(chap) {
+    brm._chapters.splice(0, 0, chap);
+  };
+
   return brm;
 };
 

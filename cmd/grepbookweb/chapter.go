@@ -36,7 +36,7 @@ func (a *App) CreateChapterAPIHandler(db grepbook.BookReviewDB) HandlerWithError
 			return newError(http.StatusInternalServerError, "problem saving new chapter", err)
 		}
 
-		a.rndr.JSON(w, http.StatusOK, &APIResponse{Message: "Chapter created successfully"})
+		a.rndr.JSON(w, http.StatusOK, cp)
 		return nil
 	}
 }

@@ -125,7 +125,7 @@ func main() {
 	r.Put("/summaries/:id", auth.Then(a.Wrap(a.UpdateBookReviewHandler(db))))
 	r.Delete("/summaries/:id", auth.Then(a.Wrap(a.DeleteBookReviewHandler(db))))
 
-	r.Post("/summaries/:id/chapters/:cid", auth.Then(a.Wrap(a.CreateChapterAPIHandler(db))))
+	r.Post("/summaries/:id/chapters/", auth.Then(a.Wrap(a.CreateChapterAPIHandler(db))))
 	r.Put("/summaries/:id/chapters/:cid", auth.Then(a.Wrap(a.UpdateChapterAPIHandler(db))))
 	r.Delete("/summaries/:id/chapters/:cid", auth.Then(a.Wrap(a.DeleteChapterAPIHandler(db))))
 	r.Put("/summaries/:id/chapters/", auth.Then(a.Wrap(a.ReorderChapterAPIHandler(db))))
