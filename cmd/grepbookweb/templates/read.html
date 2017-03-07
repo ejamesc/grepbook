@@ -14,7 +14,7 @@
   </div>
 </div>
 <div class='row'>
-  <div class='small-12 medium-8 medium-offset-1 columns'>
+  <div class='small-12 medium-6 medium-offset-1 columns'>
     {{ if .BRHTML }}
       {{ .BRHTML }}
     {{ else }}
@@ -29,7 +29,7 @@
     {{ end }}
     
   </div>
-  <div class='small-12 medium-2 end columns'>
+  <div class='small-12 medium-2 medium-offset-2 end columns'>
     <h4>Chapters</h4>
     <ol class='chapter-list'>
       {{ if gt (len .BookReview.Chapters) 0 }}
