@@ -146,7 +146,7 @@ func main() {
 	def := alice.New(responseWriterWrapper).Extend(common)
 	r.NotFound = def.Then(responseWriterWrapper(http.HandlerFunc(a.NotFoundHandler)))
 
-	http.ListenAndServe(":3000", r)
+	http.ListenAndServe(":5000", r)
 }
 
 func LoadConfiguration(pwd string) error {
