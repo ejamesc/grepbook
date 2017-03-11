@@ -11,6 +11,9 @@ import (
 func (a *App) UserProfileHandler() HandlerWithError {
 	return func(w http.ResponseWriter, req *http.Request) error {
 		user := getUser(req)
+		if user == nil {
+			return newError(500, "User doesn't exist", nil)
+		}
 
 		fs := a.getFlashes(w, req)
 		pp := &struct {
