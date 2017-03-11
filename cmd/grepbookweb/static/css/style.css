@@ -42,6 +42,11 @@
 }
 
 h1, h2, h3, h4, h5 { font-family: 'Cormorant Garamond', 'Georgia', serif; }
+h1 { font-size: 3rem; }
+h2 { font-size: 2.25rem; }
+h3 { font-size: 1.75rem; }
+h4 { font-size: 1.25rem; }
+h5 { font-size: 1.05rem; }
 body { font: 1.05rem 'Clear Sans', Arial, sans-serif; }
 .black-link { color: #333; }
 
@@ -65,9 +70,26 @@ header h3 {
 }
 
 .header-actions {
-  display: inline-block;
-  float: right;
   padding-top: 15px;
+  display: inline-block;
+}
+
+
+@media only screen { 
+  .header-actions {
+    margin: 0 auto;
+  }
+  .header-actions ul, .header-actions ol {
+    margin-left: 0rem;
+  }
+  header { text-align: center; }
+}
+
+@media only screen and (min-width: 40.063em) { 
+  .header-actions {
+    float: right;
+  }
+  header { text-align: left; }
 }
 
 header a { color: #eee; }
@@ -113,7 +135,6 @@ nav.header-actions ul li {
 /* INDEX PAGE */
 .date-block { 
   padding-top: 10px;
-  margin-left: -10px;
   font-style: italic;
   color: #666;
 }

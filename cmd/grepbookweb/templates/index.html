@@ -28,12 +28,12 @@
     {{ with $g := . }}
     {{ range $index, $br := $g.Ongoing }}
     <div class='row'>
-      <div class='small-2 columns date-block'>
+      <div class='small-12 medium-2 columns date-block'>
         <p>{{ $br.DateTimeCreated | datefmt }}</p>
       </div>
-      <div class='small-10 columns'>
+      <div class='small-12 medium-10 columns'>
         <h3><a href='/summaries/{{ $br.UID }}{{ if $g.User }}/edit{{ end }}'>{{ $br.Title }}</a></h3>
-        <h5>{{ if $br.BookAuthor }}By {{ $br.BookAuthor }}{{ end }}</h5>
+        <p>{{ if $br.BookAuthor }}By {{ $br.BookAuthor }}{{ end }}</p>
       </div>
     </div>
     {{ end }}
@@ -50,12 +50,12 @@
   <div class='small-12 medium-10 medium-offset-1 columns end summary-block'>
     {{ range .Done }}
     <div class='row'>
-      <div class='small-2 columns date-block'>
+      <div class='small-12 medium-2 columns date-block'>
         <p>{{ .DateTimeCreated | datefmt }}</p>
       </div>
-      <div class='small-10 columns'>
+      <div class='small-12 medium-10 columns'>
         <h3><a href='/summaries/{{ .UID }}'>{{ .Title }}</a></h3>
-        <h5>{{ if .BookAuthor }}By {{ .BookAuthor }}{{ end }}</h5>
+        <p>{{ if .BookAuthor }}By {{ .BookAuthor }}{{ end }}</p>
       </div>
     </div>
     {{ end }}
