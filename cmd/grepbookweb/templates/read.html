@@ -39,10 +39,10 @@
 </div>
 <div class='row'>
   <div class='small-12 medium-6 medium-offset-1 end columns'>
-    {{ range .BookReview.Chapters }}
+    {{ range $i, $c := .BookReview.Chapters }}
       <div class='chapter-summary'>
-        <a name="{{ .ID }}"></a><h3>{{ .Heading }}</h3>
-        {{ .TemplateHTML }}
+        <a name="{{ $c.ID }}"></a><h3>{{ idx $i }}. {{ $c.Heading }}</h3>
+        {{ $c.TemplateHTML }}
       </div>
     {{ end }}
     

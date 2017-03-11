@@ -58,6 +58,7 @@ func SetupApp(r *Router, logger appLogger, cookieSecretKey []byte, templateDirec
 		Funcs: []template.FuncMap{
 			template.FuncMap{
 				"datefmt": dateFmt,
+				"idx":     idx,
 			}},
 	})
 
