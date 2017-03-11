@@ -74,27 +74,8 @@ header h3 {
   display: inline-block;
 }
 
-
-@media only screen { 
-  .header-actions {
-    margin: 0 auto;
-  }
-  .header-actions ul, .header-actions ol {
-    margin-left: 0rem;
-  }
-  header { text-align: center; }
-}
-
-@media only screen and (min-width: 40.063em) { 
-  .header-actions {
-    float: right;
-  }
-  header { text-align: left; }
-}
-
 header a { color: #eee; }
 header a:hover { color: #ddd; }
-
 
 nav.header-actions ul li {
   display: inline;
@@ -154,10 +135,8 @@ nav.header-actions ul li {
 }
 
 .label-right {
-  float: right;
-  display: inline-block;
   padding: 7px;
-  margin-left: 3px;
+  margin: 0px 0px 15px 3px;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
@@ -230,4 +209,32 @@ footer {
   top: 0;
   right: 0;
   margin-right: 30px;
+}
+
+/* MEDIA QUERIES */
+
+@media only screen { 
+  .header-actions {
+    margin: 0 auto;
+  }
+  .header-actions ul, .header-actions ol {
+    margin-left: 0rem;
+  }
+  header { text-align: center; }
+  .label-right { 
+    float: left; 
+    display: block;
+  }
+}
+
+@media only screen and (min-width: 40.063em) { 
+  .header-actions {
+    float: right;
+  }
+  header { text-align: left; }
+  .label-right {
+    float: right;
+    display: inline-block;
+  }
+}
 }

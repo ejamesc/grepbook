@@ -37,7 +37,7 @@
         {{ range .BookReview.Chapters }}
         <div class='chapter-summary'>
           <h3 class='draggable'><span class='grey-draggable'><i class='fa fa-ellipsis-v'></i></span> {{ .Heading }}</h3>
-          {{ .HTML }}
+          {{ .TemplateHTML }}
         </div>
         {{ end }}
       </div>
