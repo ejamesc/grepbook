@@ -10,11 +10,23 @@ var BookSummaryModel = function(json) {
   brm.bookURL = m.prop(br.book_url || "");
   brm.overviewHTML = m.prop(br.html || "");
   brm.delta = m.prop(br.delta || "");
+  brm.coverImage = m.prop(br.cover_image || "");
   brm.isOngoing = m.prop(br.is_ongoing || false);
   brm._chapters = [];
   if (br.chapters) {
     brm._chapters = br.chapters.map(function(c) { return ChapterModel(c, brm); });
   }
+  brm.loadCover = function(e) {
+    var reader = new FileReader();
+    reader.addEventListener("load", function() {
+      brm.coverImage(reader.result);
+      m.redraw();
+    }, false);
+    var file = e.target.files[0];
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
 
   brm._json = function() {
     return {
@@ -25,6 +37,7 @@ var BookSummaryModel = function(json) {
       html: brm.overviewHTML(),
       delta: brm.delta(),
       is_ongoing: brm.isOngoing(),
+      cover_image: brm.coverImage(),
       chapters: brm._chapters,
     };
   };
@@ -130,9 +143,7 @@ var BookSummaryDetailsPopupViewModel = (function() {
 
   vm.openPopup = function(bookSummaryModel) {
     vm._bookSummaryModel = bookSummaryModel || BookSummaryModel();
-    if (bookSummaryModel) {
-      vm.isCreateMode = m.prop(false);
-    }
+    vm.isCreateMode(typeof(bookSummaryModel) === "undefined");
     vm.isShowPopup(true);
     m.redraw();
   };
@@ -176,18 +187,16 @@ var BookSummaryDetailsPopup = {
                          m("input", {type: "text", placeholder: "Amazon URL", name: "url", value: vm._bookSummaryModel.bookURL(), oninput: m.withAttr("value", vm._bookSummaryModel.bookURL)})),
                      ]),
                      m(".medium-6.small-12.columns", [
-                      m("label", "Chapters", 
-                       m("textarea.chapterbox", (function() { 
-                         var a = {name: "chapters", 
-                           placeholder: "Chapter list, separated by commas"}; 
-                         if (!vm.isCreateMode()) { a.readonly = "true"; }
-                         return a;
-                       })(), vm._bookSummaryModel.chapterList())),
-                       vm.isCreateMode() ? m("input.button.float-right.success", {type: "submit", value: "Go go go!"}) : m(".button.float-right.success", {onclick: vm.save.bind(this)}, "Update!"),
+                      !vm.isCreateMode() ? m("label", "Cover Image",
+                        m("img", {src: vm._bookSummaryModel.coverImage(), style: "max-width: 400px; display: block;"}),
+                        m("input", {type: "file", name: "file", onchange: vm._bookSummaryModel.loadCover})
+                       ): null,
                      ]),
                    ]),
                    m("div", {style: "clear:both;"}),
                  ]),
+                  vm.isCreateMode() ? m("input.button.float-right.success", {type: "submit", value: "Go go go!"}) : m(".button.float-right.success", {onclick: vm.save.bind(this)}, "Update!"),
+                  m("div", {style: "clear:both;"}),
                  m("a.close", {onclick: vm.closePopup}, m.trust("&times;")),
                ]));
     } else {

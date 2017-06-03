@@ -21,7 +21,10 @@
       <p><em>This book summary hasn't been written yet. Such possibilities await!</em></p>
     {{ end }}
   </div>
-  <div class='small-12 medium-3 medium-offset-1 end columns'>
+  <div class='small-12 medium-4 end columns'>
+    <img src="{{ .CoverImage }}">
+  </div>
+  <!--<div class='small-12 medium-3 medium-offset-1 end columns'>
     <h4>Chapters</h4>
     <ol class='chapter-list'>
       {{ if gt (len .BookReview.Chapters) 0 }}
@@ -30,7 +33,7 @@
         {{ end }}
       {{ end }}
     </ol>
-  </div>
+  </div>-->
 </div>
 <div class='row'>
   <div class='small-12 medium-10 medium-offset-1 end columns'>

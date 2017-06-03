@@ -22,6 +22,7 @@ type BookReview struct {
 	DateTimeCreated time.Time  `json:"date_created"`
 	DateTimeUpdated time.Time  `json:"date_updated"`
 	IsOngoing       bool       `json:"is_ongoing"`
+	CoverImage      string     `json:"cover_image"`
 	Chapters        []*Chapter `json:"chapters"`
 }
 

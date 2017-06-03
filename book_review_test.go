@@ -29,6 +29,7 @@ func TestCreateBookReview(t *testing.T) {
 	assert(t, br.BookAuthor != "", "expect book author to be filled with string")
 	assert(t, br.IsOngoing, "expect IsOngoing to be true")
 	assert(t, br.OverviewHTML == "<p>Hello</p>", "expect HTML to be empty")
+	assert(t, br.CoverImage == "", "expect CoverImage to be empty")
 	equals(t, 2, len(br.Chapters))
 	for _, chap := range br.Chapters {
 		assert(t, chap.ID != "", "expect chapter ID to not be empty")

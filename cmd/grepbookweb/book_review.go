@@ -31,11 +31,13 @@ func (a *App) ReadHandler(db grepbook.BookReviewDB) HandlerWithError {
 		pp := struct {
 			BookReview *grepbook.BookReview
 			BRHTML     template.HTML
+			CoverImage template.URL
 			IsNew      bool
 			*localPresenter
 		}{
 			BookReview:     br,
 			BRHTML:         template.HTML(br.OverviewHTML),
+			CoverImage:     template.URL(br.CoverImage),
 			IsNew:          isNew,
 			localPresenter: &localPresenter{PageTitle: "Summary of " + br.Title, PageURL: "/summary", globalPresenter: a.gp, User: user},
 		}
@@ -192,5 +194,8 @@ func mergeBookReviewDeltas(oldBR, newBR *grepbook.BookReview) {
 	}
 	if newBR.IsOngoing != oldBR.IsOngoing {
 		oldBR.IsOngoing = newBR.IsOngoing
+	}
+	if newBR.CoverImage != "" || newBR.CoverImage != oldBR.CoverImage {
+		oldBR.CoverImage = newBR.CoverImage
 	}
 }
