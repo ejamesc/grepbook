@@ -59,6 +59,7 @@ func (ml *MockLogger) Log(str string, v ...interface{}) {
 
 type HandleTester func(method string, params url.Values) *httptest.ResponseRecorder
 type HandleBodyTester func(method string, body io.Reader) *httptest.ResponseRecorder
+type HandleMultiPartTester func(method string, body io.Reader, contentType string) *httptest.ResponseRecorder
 
 // Given the current test runner and an http.Handler, generate a
 // HandleTester which will test its given input against the
@@ -112,12 +113,15 @@ func GenerateHandleJSONTesterWithURLParams(
 	loggedIn bool,
 	httpRouterParams httprouter.Params,
 ) HandleBodyTester {
-	return GenerateHandleBodyTesterWithURLParams(
-		t,
-		handleFunc,
-		loggedIn,
-		httpRouterParams,
-		"application/json; param=value")
+	return func(method string, body io.Reader) *httptest.ResponseRecorder {
+		fn := GenerateHandleBodyTesterWithURLParams(
+			t,
+			handleFunc,
+			loggedIn,
+			httpRouterParams,
+		)
+		return fn(method, body, "application/json; param=value")
+	}
 }
 
 func GenerateHandleBodyTesterWithURLParams(
@@ -125,9 +129,8 @@ func GenerateHandleBodyTesterWithURLParams(
 	handleFunc http.Handler,
 	loggedIn bool,
 	httpRouterParams httprouter.Params,
-	contentType string,
-) HandleBodyTester {
-	return func(method string, body io.Reader) *httptest.ResponseRecorder {
+) HandleMultiPartTester {
+	return func(method string, body io.Reader, contentType string) *httptest.ResponseRecorder {
 		req, err := http.NewRequest(method, "", body)
 		ok(t, err)
 		req.Header.Set(

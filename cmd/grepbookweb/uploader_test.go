@@ -76,20 +76,34 @@ func (u *mockUploader) Delete(filename string) error {
 func TestUploadHandler(t *testing.T) {
 	mockUploader := &mockUploader{badExtension: false, isFail: false}
 	uploadHandler := app.UploadHandler(mockUploader)
-	bodyBuf := &bytes.Buffer{}
-	multiWriter := multipart.NewWriter(bodyBuf)
-	fileWriter, err := multiWriter.CreateFormFile("file", "blah.jpg")
+	bodyBuf, contentType, err := createFileUploadReader("file", "blah.jpg", []byte("ajsjfajfkalfjalisjd"))
 	ok(t, err)
 
-	fileWriter.Write([]byte("asfajgoiejofcaogjiaofioaejfi"))
-	multiWriter.Close()
 	test := GenerateHandleBodyTesterWithURLParams(t,
 		app.Wrap(uploadHandler),
 		true,
 		httprouter.Params{},
-		multiWriter.FormDataContentType(),
 	)
-	w := test("POST", bodyBuf)
+	w := test("POST", bodyBuf, contentType)
 	assert(t, w.Code == http.StatusOK, "expect normal file upload to succeed, instead got %d", w.Code)
 
+	mockUploader.badExtension = true
+	bodyBuf, contentType, err = createFileUploadReader("file", "blah.txt", []byte("ajsjfajfkalfjalisjd"))
+	ok(t, err)
+	w = test("POST", bodyBuf, contentType)
+	assert(t, w.Code == http.StatusBadRequest, "expect bad request when unacceptable file extension, instead got %d", w.Code)
+
+}
+
+func createFileUploadReader(key, filename string, contents []byte) (*bytes.Buffer, string, error) {
+	bodyBuf := &bytes.Buffer{}
+	multiWriter := multipart.NewWriter(bodyBuf)
+	fileWriter, err := multiWriter.CreateFormFile(key, filename)
+	if err != nil {
+		return bodyBuf, "", err
+	}
+
+	fileWriter.Write(contents)
+	multiWriter.Close()
+	return bodyBuf, multiWriter.FormDataContentType(), nil
 }
