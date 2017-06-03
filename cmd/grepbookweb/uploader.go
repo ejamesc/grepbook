@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 var (
@@ -62,9 +63,28 @@ func (u *LocalUploader) Delete(filename string) error {
 	return os.Remove(filepath.Join(u.uploadFolder, filename))
 }
 
-func UploadHandler(up *Uploader) HandlerWithError {
+// UploadHandler is the file upload handler
+func (a *App) UploadHandler(up Uploader) HandlerWithError {
 	return func(w http.ResponseWriter, req *http.Request) error {
+		file, header, err := req.FormFile("file")
+		if err != nil {
+			a.rndr.JSON(w, http.StatusInternalServerError, &APIResponse{Message: "FormFile extraction failed"})
+			return new500Error("error retrieving file: ", err)
+		}
+		defer file.Close()
 
+		user := getUser(req)
+		fpath := filepath.Join(a.UploadPath(), strconv.FormatUint(user.ID, 10), header.Filename)
+		err = up.Upload(fpath, file)
+		if err != nil {
+			if err == ErrUnacceptableFileExtension {
+				a.rndr.JSON(w, http.StatusBadRequest, &APIResponse{Message: "Only accept files that end in .jpg, .jpeg, .png and .gif"})
+				return newError(http.StatusBadRequest, "file extension error: ", err)
+			}
+			return newError(http.StatusInternalServerError, "uploader error: ", err)
+		}
+
+		a.rndr.JSON(w, http.StatusOK, &APIResponse{Message: "File uploaded successfully"})
 		return nil
 	}
 }

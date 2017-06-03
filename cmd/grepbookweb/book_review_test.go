@@ -57,7 +57,7 @@ func TestUpdateBookReviewHandler(t *testing.T) {
 	mockDB := &MockBookReviewDB{shouldFail: false}
 	updateBookReviewHandler := app.UpdateBookReviewHandler(mockDB)
 	params := httprouter.Params{httprouter.Param{Key: "id", Value: "someUUID"}}
-	test := GenerateHandleBodyTesterWithURLParams(t, app.Wrap(updateBookReviewHandler), true, params)
+	test := GenerateHandleJSONTesterWithURLParams(t, app.Wrap(updateBookReviewHandler), true, params)
 	br, _ := mockDB.GetBookReview("someUUID")
 
 	// Successful update
@@ -75,7 +75,7 @@ func TestUpdateBookReviewHandler(t *testing.T) {
 
 	// User gives nonexistent uuid
 	params = httprouter.Params{httprouter.Param{Key: "id", Value: ""}}
-	test = GenerateHandleBodyTesterWithURLParams(t, app.Wrap(updateBookReviewHandler), true, params)
+	test = GenerateHandleJSONTesterWithURLParams(t, app.Wrap(updateBookReviewHandler), true, params)
 	w = test("PUT", strings.NewReader(jsonString))
 	equals(t, http.StatusNotFound, w.Code)
 }

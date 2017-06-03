@@ -1,12 +1,18 @@
 package main_test
 
 import (
+	"bytes"
+	"fmt"
+	"io"
+	"mime/multipart"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
 	main "github.com/ejamesc/grepbook/cmd/grepbookweb"
+	"github.com/julienschmidt/httprouter"
 )
 
 func TestCreateUploader(t *testing.T) {
@@ -20,7 +26,7 @@ func TestCreateUploader(t *testing.T) {
 	assert(t, u == nil, "expect CreateUploader to return nil, instead got %+v", u)
 }
 
-func TestUploaderUpload(t *testing.T) {
+func TestUploaderUploadAndDelete(t *testing.T) {
 	tmpPath, tmpFilename := "/tmp", "grepbookTest.jpg"
 	u, err := app.CreateUploader(tmpPath)
 	ok(t, err)
@@ -43,4 +49,47 @@ func TestUploaderUpload(t *testing.T) {
 	// file should have been deleted
 	_, err = os.Stat(filepath.Join(tmpPath, tmpFilename))
 	equals(t, true, os.IsNotExist(err))
+}
+
+type mockUploader struct {
+	badExtension bool
+	isFail       bool
+}
+
+func (u *mockUploader) Upload(filename string, fileReader io.Reader) error {
+	if u.badExtension {
+		return main.ErrUnacceptableFileExtension
+	}
+	if u.isFail {
+		return fmt.Errorf("some err")
+	}
+	return nil
+}
+
+func (u *mockUploader) Delete(filename string) error {
+	if u.isFail {
+		return fmt.Errorf("some err")
+	}
+	return nil
+}
+
+func TestUploadHandler(t *testing.T) {
+	mockUploader := &mockUploader{badExtension: false, isFail: false}
+	uploadHandler := app.UploadHandler(mockUploader)
+	bodyBuf := &bytes.Buffer{}
+	multiWriter := multipart.NewWriter(bodyBuf)
+	fileWriter, err := multiWriter.CreateFormFile("file", "blah.jpg")
+	ok(t, err)
+
+	fileWriter.Write([]byte("asfajgoiejofcaogjiaofioaejfi"))
+	multiWriter.Close()
+	test := GenerateHandleBodyTesterWithURLParams(t,
+		app.Wrap(uploadHandler),
+		true,
+		httprouter.Params{},
+		multiWriter.FormDataContentType(),
+	)
+	w := test("POST", bodyBuf)
+	assert(t, w.Code == http.StatusOK, "expect normal file upload to succeed, instead got %d", w.Code)
+
 }

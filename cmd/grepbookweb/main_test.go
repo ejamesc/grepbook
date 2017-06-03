@@ -104,20 +104,35 @@ func GenerateHandleTesterWithURLParams(
 	}
 }
 
-// GenerateHandleBodyTesterWithURLParams returns a HandleBodyTester
+// GenerateHandleJSONTesterWithURLParams returns a HandleBodyTester
 // given a httprouter.Params
+func GenerateHandleJSONTesterWithURLParams(
+	t *testing.T,
+	handleFunc http.Handler,
+	loggedIn bool,
+	httpRouterParams httprouter.Params,
+) HandleBodyTester {
+	return GenerateHandleBodyTesterWithURLParams(
+		t,
+		handleFunc,
+		loggedIn,
+		httpRouterParams,
+		"application/json; param=value")
+}
+
 func GenerateHandleBodyTesterWithURLParams(
 	t *testing.T,
 	handleFunc http.Handler,
 	loggedIn bool,
 	httpRouterParams httprouter.Params,
+	contentType string,
 ) HandleBodyTester {
 	return func(method string, body io.Reader) *httptest.ResponseRecorder {
 		req, err := http.NewRequest(method, "", body)
 		ok(t, err)
 		req.Header.Set(
 			"Content-Type",
-			"application/x-www-form-urlencoded; param=value",
+			contentType,
 		)
 		w := httptest.NewRecorder()
 		if loggedIn {

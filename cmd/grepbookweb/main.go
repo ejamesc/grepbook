@@ -22,16 +22,23 @@ const isDevelopment = true
 
 // App is the main app.
 type App struct {
-	rndr   *render.Render
-	router *Router
-	store  *sessions.CookieStore
-	gp     globalPresenter
-	bm     *bluemonday.Policy
-	logr   appLogger
+	rndr       *render.Render
+	router     *Router
+	store      *sessions.CookieStore
+	uploadPath string
+	gp         globalPresenter
+	bm         *bluemonday.Policy
+	logr       appLogger
 }
 
+// Getter for cookie store
 func (a *App) GetStore() *sessions.CookieStore {
 	return a.store
+}
+
+// Getter for uploadPath
+func (a *App) UploadPath() string {
+	return a.uploadPath
 }
 
 // globalPresenter contains the fields necessary for presenting in all templates
