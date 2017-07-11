@@ -2,11 +2,14 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
+
+	"github.com/renstrom/shortuuid"
 )
 
 var (
@@ -19,7 +22,7 @@ type LocalUploader struct {
 }
 
 type Uploader interface {
-	Upload(filename string, fileReader io.Reader) error
+	Upload(filename string, fileReader io.Reader) (path string, err error)
 	Delete(filename string) error
 }
 
@@ -36,26 +39,34 @@ func (a *App) CreateUploader(fullUploadFolderPath string) (*LocalUploader, error
 }
 
 // Upload saves a file to the upload folder
-func (u *LocalUploader) Upload(filename string, fileReader io.Reader) error {
-	if !isAcceptedExtension(filepath.Ext(filename)) {
-		return ErrUnacceptableFileExtension
+func (u *LocalUploader) Upload(filename string, fileReader io.Reader) (savedPath string, err error) {
+	ext := filepath.Ext(filename)
+	if !isAcceptedExtension(ext) {
+		return "", ErrUnacceptableFileExtension
 	}
-	loc := filepath.Join(u.uploadFolder, filename)
+	filename = fmt.Sprintf("%s%s", shortuuid.New(), ext)
+
+	err = os.MkdirAll(filepath.Join(u.uploadFolder, filename[:2]), os.ModePerm)
+	if err != nil {
+		return "", err
+	}
+	res := filepath.Join(filename[:2], filename)
+	loc := filepath.Join(u.uploadFolder, res)
 	out, err := os.Create(loc)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer out.Close()
 
 	written, err := io.Copy(out, fileReader)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if u.logr != nil {
 		u.logr.Log("%s saved with %d bytes", loc, written)
 	}
 
-	return nil
+	return res, nil
 }
 
 // Delete simply deletes the given filename in the upload folder. No checking is done.
@@ -75,7 +86,7 @@ func (a *App) UploadHandler(up Uploader) HandlerWithError {
 
 		user := getUser(req)
 		fpath := filepath.Join(a.UploadPath(), strconv.FormatUint(user.ID, 10), header.Filename)
-		err = up.Upload(fpath, file)
+		_, err = up.Upload(fpath, file)
 		if err != nil {
 			if err == ErrUnacceptableFileExtension {
 				a.rndr.JSON(w, http.StatusBadRequest, &APIResponse{Message: "Only accept files that end in .jpg, .jpeg, .png and .gif"})

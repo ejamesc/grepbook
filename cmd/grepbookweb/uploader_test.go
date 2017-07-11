@@ -31,23 +31,23 @@ func TestUploaderUploadAndDelete(t *testing.T) {
 	u, err := app.CreateUploader(tmpPath)
 	ok(t, err)
 
-	err = u.Upload("badFileExtension.txt", strings.NewReader("quick brown fox"))
+	_, err = u.Upload("badFileExtension.txt", strings.NewReader("quick brown fox"))
 	assert(t, err == main.ErrUnacceptableFileExtension, "expect .txt upload to fail with ErrUnacceptableFileExtension, instead got %s", err)
-	err = u.Upload("badFileExtension", strings.NewReader("quick brown fox"))
+	_, err = u.Upload("badFileExtension", strings.NewReader("quick brown fox"))
 	assert(t, err == main.ErrUnacceptableFileExtension, "expect no extension file upload to fail with ErrUnacceptableFileExtension, instead got %s", err)
 
-	err = u.Upload(tmpFilename, strings.NewReader("quick brown fox"))
+	savePath, err := u.Upload(tmpFilename, strings.NewReader("quick brown fox"))
 	ok(t, err)
 
 	// file should exist
-	_, err = os.Stat(filepath.Join(tmpPath, tmpFilename))
+	_, err = os.Stat(filepath.Join(tmpPath, savePath))
 	ok(t, err)
 
-	err = u.Delete(tmpFilename)
+	err = u.Delete(savePath)
 	ok(t, err)
 
 	// file should have been deleted
-	_, err = os.Stat(filepath.Join(tmpPath, tmpFilename))
+	_, err = os.Stat(filepath.Join(tmpPath, savePath))
 	equals(t, true, os.IsNotExist(err))
 }
 
@@ -56,14 +56,14 @@ type mockUploader struct {
 	isFail       bool
 }
 
-func (u *mockUploader) Upload(filename string, fileReader io.Reader) error {
+func (u *mockUploader) Upload(filename string, fileReader io.Reader) (string, error) {
 	if u.badExtension {
-		return main.ErrUnacceptableFileExtension
+		return "", main.ErrUnacceptableFileExtension
 	}
 	if u.isFail {
-		return fmt.Errorf("some err")
+		return "", fmt.Errorf("some err")
 	}
-	return nil
+	return "", nil
 }
 
 func (u *mockUploader) Delete(filename string) error {
